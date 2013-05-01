@@ -3,6 +3,8 @@ package org.sensationcraft.login.sql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,9 +43,9 @@ public abstract class Database
     
     protected abstract boolean checkTable(String name);
     
-    protected abstract boolean createTable();
+    protected abstract boolean createTable(String name, Map<String, PropertyList> columns);
     
-    protected abstract ResultSet query(String query);
+    protected abstract ResultSet executeQuery(String query);
     
     protected abstract PreparedStatement prepare(String query);
     

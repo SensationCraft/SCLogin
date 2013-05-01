@@ -1,0 +1,14 @@
+name: SCLogin
+authors: [superckl, FireBlast709]
+version: 0.1
+main: org.sensationcraft.login.SCLogin
+website: www.sensationcraft.info
+commands:
+  s:
+    description: Shout a message
+    usage: Syntax error! Type /<command> message
+  shout:
+    description: Shout a message
+    usage: Syntax error! Type /<command> message
+  factioncheck:
+    description: Check a factions for overlapping IPs.

@@ -3,7 +3,6 @@ package org.sensationcraft.login.sql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,20 +17,17 @@ public abstract class Database
     protected Connection con;
     
     private final Logger log;
-    
-    private final String prefix;
-    
-    protected Database(String prefix, Logger log)
+        
+    protected Database(Logger log)
     {
         this.log = log;
-        this.prefix = prefix;
     }
     
-    protected abstract boolean initialize();
+    public abstract boolean initialize();
     
-    protected abstract Connection connect();
+    public abstract boolean connect();
     
-    protected boolean isReady()
+    public boolean isReady()
     {
         if(this.con == null)
         {
@@ -41,16 +37,16 @@ public abstract class Database
         return true;
     }
     
-    protected abstract boolean checkTable(String name);
+    public abstract boolean checkTable(String name);
     
-    protected abstract boolean createTable(String name, Map<String, PropertyList> columns);
+    public abstract boolean createTable(String name, Map<String, PropertyList> columns);
     
-    protected abstract ResultSet executeQuery(String query);
+    public abstract ResultSet executeQuery(String query);
     
-    protected abstract PreparedStatement prepare(String query);
+    public abstract PreparedStatement prepare(String query);
     
     protected void log(String msg, Object...o)
     {
-        log.log(Level.SEVERE, prefix+msg, o);
+        log.log(Level.SEVERE, String.format(msg, o));
     }
 }

@@ -18,12 +18,43 @@ import java.util.logging.Logger;
  */
 public class SQLite extends Database
 {
+    
+    private enum Type
+    {
+        INSERT("INSERT"),
+        UPDATE("UPDATE"),
+        DELETE("DELETE"),
+        SELECT("SELECT"),
+        CREATE("CREATE"),
+        NONE("");
+        
+        private final String sql;
+        
+        private Type(String sql)
+        {
+            this.sql = sql;
+        }
+        
+        public String getSQL()
+        {
+            return this.sql;
+        }
+        
+        public static Type getType(String keyword)
+        {
+            for(Type t : values())
+            {
+                if(t.getSQL().equalsIgnoreCase(keyword)) return t;
+            }
+            return Type.NONE;
+        }
+    }
         
     private File dbfile;
     
-    public SQLite(String prefix, Logger log, File dbfile)
+    public SQLite(Logger log, File dbfile)
     {
-        super(prefix, log);
+        super(log);
         this.dbfile = dbfile;
         if(!this.dbfile.exists())
         {
@@ -58,7 +89,7 @@ public class SQLite extends Database
     }
     
     @Override
-    public Connection connect()
+    public boolean connect()
     {
         if(initialize())
         {
@@ -71,11 +102,11 @@ public class SQLite extends Database
                 log("Failed to establish a SQLite connection, SQLException: ", ex.getMessage());
             }
         }
-        return this.con;
+        return this.con != null;
     }
 
     @Override
-    protected boolean checkTable(String name)
+    public boolean checkTable(String name)
     {
         if(!isReady()) return false;
         try
@@ -94,7 +125,7 @@ public class SQLite extends Database
     }
 
     @Override
-    protected boolean createTable(String name, Map<String, PropertyList> columns)
+    public boolean createTable(String name, Map<String, PropertyList> columns)
     {
         if(!isReady()) return false;
         
@@ -125,7 +156,7 @@ public class SQLite extends Database
     }
 
     @Override
-    protected ResultSet executeQuery(String query)
+    public ResultSet executeQuery(String query)
     {
         if(!isReady()) return null;
         
@@ -134,7 +165,19 @@ public class SQLite extends Database
         try
         {
             Statement stmt = this.con.createStatement();
-            result = stmt.executeQuery(query);
+            switch(this.getQueryType(query))
+            {
+                case INSERT:
+                case UPDATE:
+                case DELETE:
+                    stmt.executeUpdate(query);
+                    break;
+                case CREATE:
+                    break;
+                default:
+                    result = stmt.executeQuery(query);
+                    break;
+            }
         }
         catch(SQLException ex)
         {
@@ -145,7 +188,7 @@ public class SQLite extends Database
     }
 
     @Override
-    protected PreparedStatement prepare(String query)
+    public PreparedStatement prepare(String query)
     {
         if(!isReady()) return null;
         PreparedStatement stmt = null;
@@ -159,5 +202,11 @@ public class SQLite extends Database
         }
         return stmt;
     }
-
+    
+    private SQLite.Type getQueryType(String query)
+    {
+        String typename = query.split(" ")[0];
+        return Type.getType(typename);
+    }
+    
 }

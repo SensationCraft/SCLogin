@@ -1,14 +1,16 @@
 name: SCLogin
-authors: [superckl, FireBlast709]
+authors: [superckl, Fireblast709]
 version: 0.1
 main: org.sensationcraft.login.SCLogin
 website: www.sensationcraft.info
 commands:
-  s:
-    description: Shout a message
-    usage: Syntax error! Type /<command> message
-  shout:
-    description: Shout a message
-    usage: Syntax error! Type /<command> message
-  factioncheck:
-    description: Check a factions for overlapping IPs.
+  login:
+    description: Login to your SCLogin account
+    usage: /<command> <password>
+    aliases: [l]
+  register:
+    description: Register your SCLogin account
+    usage: /<command> <password> <confirm password>
+  sclogin:
+    description: administration command for trusted staff
+    usage: /<command> [subcommand]

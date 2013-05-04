@@ -1,19 +1,13 @@
 package org.sensationcraft.login.commands;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sensationcraft.login.PlayerManager;
 import org.sensationcraft.login.SCLogin;
 
-/**
- *
- * @author DarkSeraphim
- */
-public class LoginCommand implements CommandExecutor
+public class LoginCommand extends SCLoginMasterCommand
 {
     
     private SCLogin plugin;
@@ -26,9 +20,8 @@ public class LoginCommand implements CommandExecutor
         this.manager = this.plugin.getPlayerManager();
     }
 
-    @Override
-    public boolean onCommand(final CommandSender sender, Command command, String cmd, String[] args)
-    {
+	@Override
+	public boolean execute(final CommandSender sender, String[] args) {
         if(sender instanceof Player == false)
         {
             sender.sendMessage("This command can only be used by players");
@@ -58,6 +51,7 @@ public class LoginCommand implements CommandExecutor
         }.runTaskAsynchronously(plugin);
         
         return true;
-    }
+		
+	}
 
 }

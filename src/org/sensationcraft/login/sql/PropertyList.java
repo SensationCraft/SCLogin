@@ -2,13 +2,10 @@ package org.sensationcraft.login.sql;
 
 import java.util.ArrayList;
 
-/**
- *
- * @author DarkSeraphim
- */
 public class PropertyList extends ArrayList<String>
 {
-        private final String type;
+	private static final long serialVersionUID = -7736338045107012795L;
+		private final String type;
 
         protected PropertyList(String type)
         {

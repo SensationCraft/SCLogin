@@ -1,9 +1,5 @@
 package org.sensationcraft.login;
 
-/**
- *
- * @author DarkSeraphim
- */
 public class PasswordManager 
 {
     

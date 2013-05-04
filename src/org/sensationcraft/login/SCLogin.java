@@ -1,25 +1,36 @@
 package org.sensationcraft.login;
 
 import java.io.File;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.sensationcraft.login.commands.LoginCommand;
+import org.sensationcraft.login.commands.RegisterCommand;
+import org.sensationcraft.login.commands.SCLoginCommand;
+import org.sensationcraft.login.commands.SCLoginMasterCommand;
 import org.sensationcraft.login.sql.Database;
 import org.sensationcraft.login.sql.SQLite;
 import org.sensationcraft.login.sql.TableBuilder;
 
 public class SCLogin extends JavaPlugin{
     
-        Database database;
+    private Database database;
         
-        PlayerManager playermngr;
+    private PlayerManager playermngr;
         
-        PasswordManager passwordmngr;
+    private PasswordManager passwordmngr;
+    
+    private Map<String, SCLoginMasterCommand> commands = new HashMap<String, SCLoginMasterCommand>();
     
 	@Override
 	public void onEnable(){
 		this.getLogger().info("Registering listeners...");
 		this.getServer().getPluginManager().registerEvents(new AuthenticationListener(this), this);
+		this.getLogger().info("Initializing commands...");
+		this.initCommandMap();
                 
                 getDataFolder().mkdirs();
                 File db = new File(getDataFolder(), "SClogin.db");
@@ -59,6 +70,11 @@ public class SCLogin extends JavaPlugin{
          * @return whether the connection was established and if 
          * the tables were either found or created with success
          */
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String name ,String[] args){
+		SCLoginMasterCommand scLoginCommand = this.commands.get(command.getName().toLowerCase());
+		return scLoginCommand == null ? false:scLoginCommand.execute(sender, args);
+	}
         private boolean initSQL()
         {
             if(!this.database.connect()) return false;
@@ -77,31 +93,27 @@ public class SCLogin extends JavaPlugin{
             return this.database.checkTable("players");
         }
         
-        /**
-         * Getter for the Database object used for SQL queries
-         * @return the Database object
-         */
         public Database getConnection()
         {
             return this.database;
         }
         
-        /**
-         * Getter for the PlayerManager object used for player related storage
-         * @return the PlayerManager object
-         */
+
         public PlayerManager getPlayerManager()
         {
             return this.playermngr;
         }
 
-        /**
-         * Getter for the PasswordManager object used for password related storage
-         * @return the PasswordManager object
-         */
         public PasswordManager getPasswordManager()
         {
             return this.passwordmngr;
+        }
+        private void initCommandMap(){
+        	LoginCommand login = new LoginCommand(this);
+        	this.commands.put("login", login);
+        	this.commands.put("l", login);
+        	this.commands.put("register", new RegisterCommand(this));
+        	this.commands.put("sclogin", new SCLoginCommand());
         }
         
 }

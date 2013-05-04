@@ -7,10 +7,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author s129977
- */
 public abstract class Database 
 {
     

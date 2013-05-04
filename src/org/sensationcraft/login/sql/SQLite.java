@@ -2,7 +2,6 @@ package org.sensationcraft.login.sql;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,10 +11,6 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.logging.Logger;
 
-/**
- *
- * @author s129977
- */
 public class SQLite extends Database
 {
     

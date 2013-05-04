@@ -7,42 +7,42 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class Database 
+public abstract class Database
 {
-    
-    protected Connection con;
-    
-    private final Logger log;
-        
-    protected Database(Logger log)
-    {
-        this.log = log;
-    }
-    
-    public abstract boolean initialize();
-    
-    public abstract boolean connect();
-    
-    public boolean isReady()
-    {
-        if(this.con == null)
-        {
-            log("Tried to execute a query or to prepare a statement while the connection was not ready.");
-            return false;
-        }
-        return true;
-    }
-    
-    public abstract boolean checkTable(String name);
-    
-    public abstract boolean createTable(String name, Map<String, PropertyList> columns);
-    
-    public abstract ResultSet executeQuery(String query);
-    
-    public abstract PreparedStatement prepare(String query);
-    
-    protected void log(String msg, Object...o)
-    {
-        log.log(Level.SEVERE, String.format(msg, o));
-    }
+
+	protected Connection con;
+
+	private final Logger log;
+
+	protected Database(Logger log)
+	{
+		this.log = log;
+	}
+
+	public abstract boolean initialize();
+
+	public abstract boolean connect();
+
+	public boolean isReady()
+	{
+		if(this.con == null)
+		{
+			this.log("Tried to execute a query or to prepare a statement while the connection was not ready.");
+			return false;
+		}
+		return true;
+	}
+
+	public abstract boolean checkTable(String name);
+
+	public abstract boolean createTable(String name, Map<String, PropertyList> columns);
+
+	public abstract ResultSet executeQuery(String query);
+
+	public abstract PreparedStatement prepare(String query);
+
+	protected void log(String msg, Object...o)
+	{
+		this.log.log(Level.SEVERE, String.format(msg, o));
+	}
 }

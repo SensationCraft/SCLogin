@@ -16,28 +16,28 @@ public enum PasswordType
 	private int type;
 	private String algorithm;
 
-	PasswordType(int type) 
-        {
+	PasswordType(int type)
+	{
 		this(type, null);
 	}
 
-	PasswordType(int type, String algorithm) 
-        {
+	PasswordType(int type, String algorithm)
+	{
 		this.type = type;
 		this.algorithm = algorithm;
 	}
 
 	public int getType()
-        {
-            return type; 
-        }
-	public String getAlgorithm() 
-        {
-            return algorithm; 
-        }
+	{
+		return this.type;
+	}
+	public String getAlgorithm()
+	{
+		return this.algorithm;
+	}
 
-	public static PasswordType getType(int type) 
-        {
+	public static PasswordType getType(int type)
+	{
 		for (PasswordType t : values())
 			if (t.type == type)
 				return t;

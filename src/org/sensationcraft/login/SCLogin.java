@@ -36,7 +36,7 @@ public class SCLogin extends JavaPlugin{
 		File db = new File(this.getDataFolder(), "SClogin.db");
 		this.database = new SQLite(this.getLogger(), db);
 		this.playermngr = new PlayerManager(this);
-		this.passwordmngr = new PasswordManager();
+		this.passwordmngr = new PasswordManager(this);
 		if(!this.initSQL())
 		{
 

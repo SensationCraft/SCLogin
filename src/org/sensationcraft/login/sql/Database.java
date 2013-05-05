@@ -3,6 +3,7 @@ package org.sensationcraft.login.sql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +23,19 @@ public abstract class Database
 	public abstract boolean initialize();
 
 	public abstract boolean connect();
+        
+        public void close()
+        {
+            try
+            {
+                this.con.close();
+                this.con = null;
+            }
+            catch(SQLException ex)
+            {
+                log("An exception occurred while closing the connection: %s", ex.getMessage());
+            }
+        }
 
 	public boolean isReady()
 	{

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.sensationcraft.login.sql.Database;
 
 public class PlayerManager
 {
@@ -24,6 +25,9 @@ public class PlayerManager
 
 	private PreparedStatement registered;
 	private final Object registeredLock = new Object();
+        
+        private PreparedStatement register;
+        private final Object registerLock = new Object();
 
 	private PreparedStatement ip;
 	private final Object ipLock = new Object();
@@ -36,35 +40,34 @@ public class PlayerManager
 		this.plugin = plugin;
 		this.registered = this.plugin.getConnection().prepare("SELECT * FROM `players` WHERE username = ?");
 		this.ip = this.plugin.getConnection().prepare("SELECT `lastip` FROM `players` WHERE username = ?");
+		this.register = this.plugin.getConnection().prepare("INSERT INTO `players`(`username`, `password`, `lastip`, `email`) VALUES(?, ?, ?, ?)");
 	}
 
 	public boolean isRegistered(String name)
 	{
-		synchronized(this.registeredLock)
-		{
-			ResultSet result = null;
-			try
-			{
-				this.registered.setString(1, name);
-				result = this.registered.executeQuery();
-				return result.next();
-			}
-			catch(SQLException ex)
-			{
-				// Might log this
-			}
-			finally
-			{
-				if(result != null)
-				{
-					try
-					{
-						result.close();
-					}catch(SQLException ex){}
-				}
-			}
-			return false;
-		}
+            xAuthHook hook = this.plugin.getxAuthHook();
+            ResultSet result = null;
+            try
+            {
+                    this.registered.setString(1, name);
+                    result = Database.synchronizedExecuteQuery(this.registered, this.registeredLock, name);
+                    return (result != null && result.next()) || (hook.isHooked() && hook.isRegistered(name));
+            }
+            catch(SQLException ex)
+            {
+                    // Might log this
+            }
+            finally
+            {
+                    if(result != null)
+                    {
+                            try
+                            {
+                                    result.close();
+                            }catch(SQLException ex){}
+                    }
+            }
+            return false;
 	}
 
 	public String getLastIp(String name)
@@ -158,22 +161,31 @@ public class PlayerManager
 			this.playerStatus.remove(name);
 		}
 	}
-	public void doLogin(String name){
-		synchronized(this.statusLock){
-			this.playerStatus.remove(name);
+	public void doLogin(String name)
+        {
+		synchronized(this.statusLock)
+                {
 			this.playerStatus.put(name, Status.AUTHENTICATED);
 			Player player = this.plugin.getServer().getPlayerExact(name);
-			if(player == null){
+			if(player == null)
+                        {
 				this.quit(name);
 				return;
 			}
 			player.sendMessage(ChatColor.GREEN+"You have been logged in!");
 		}
 	}
-	public void register(String name, String pass){
-		synchronized(this.statusLock){
-			//TODO register player
-		}
+        
+	public boolean register(String name, String pass, String ip) throws Exception
+        {
+            if(this.isRegistered(name))
+            {
+                return false;
+            }
+            
+            
+            
+            return true;
 	}
 
 }

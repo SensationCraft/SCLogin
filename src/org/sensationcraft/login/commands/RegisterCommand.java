@@ -18,7 +18,8 @@ public class RegisterCommand extends SCLoginMasterCommand{
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args) 
+        {
 		if(sender instanceof Player == false)
 		{
 			sender.sendMessage("This command can only be used by players");
@@ -27,18 +28,39 @@ public class RegisterCommand extends SCLoginMasterCommand{
 
 		if(args.length != 2)
 		{
-			sender.sendMessage(ChatColor.RED+"Correct usage: /login <password>");
+			sender.sendMessage(ChatColor.RED+"Correct usage: /register <password> <confirm password>");
 			return true;
 		}
-		new BukkitRunnable(){
+                
+                if(!args[0].equals(args[1]))
+                {
+                        sender.sendMessage(ChatColor.RED+"Your entered passwords don't seem to match.");
+                        return true;
+                }
+                
+                final String ip = ((Player)sender).getAddress().getAddress().getHostAddress();
+                
+		new BukkitRunnable()
+                {
 
 			@Override
-			public void run() {
-				if(RegisterCommand.this.manager.isRegistered(sender.getName())){
-					sender.sendMessage(ChatColor.RED+"I'm sorry, you are already registered. You can use '/changepw' to change your password.");
-					return;
+			public void run() 
+                        {
+                            try
+                            {
+				if(RegisterCommand.this.manager.register(sender.getName(), args[1], ip))
+                                {
+					sender.sendMessage(ChatColor.GREEN+"You are now registered, use /login <password> to login.");
 				}
-				RegisterCommand.this.manager.register(sender.getName(), args[1]);
+                                else
+                                {
+                                        sender.sendMessage(ChatColor.RED+"I'm sorry, you are already registered. You can use '/changepw' to change your password.");
+                                }
+                            }
+                            catch(Exception ex)
+                            {
+                                sender.sendMessage(ChatColor.RED+"An error occurred while attempting to register you. Please contact a member of staff on sensationcraft.info");
+                            }
 			}
 
 		}.runTaskAsynchronously(this.scLogin);

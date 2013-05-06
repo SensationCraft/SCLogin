@@ -1,153 +1,120 @@
 package org.sensationcraft.login;
 
-import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import org.sensationcraft.login.password.PasswordHandler;
-import org.sensationcraft.login.password.PasswordType;
 import org.sensationcraft.login.sql.Database;
-import org.sensationcraft.login.sql.SQLite;
 
 public class PasswordManager
 {
 
     private SCLogin plugin;
-    private Database olddb;
-    private PreparedStatement getid;
-    private PreparedStatement delid;
-
+    
+    private PreparedStatement getpass;
+    private final Object getpassLock = new Object();
+    
+    private PreparedStatement cpw;
+    private final Object cpwLock = new Object();
+    
     protected PasswordManager(SCLogin plugin)
     {
         this.plugin = plugin;
-        File oldfile = new File(plugin.getDataFolder(), "xauth.db");
-        if (oldfile.exists())
-        {
-            olddb = new SQLite(plugin.getLogger(), oldfile);
-            if (olddb.connect())
-            {
-                ResultSet result = null;
-                try
-                {
-                    result = olddb.executeQuery("SELECT * FROM accounts");
-                    if (!result.next())
-                    {
-                        olddb.close();
-                        oldfile.delete();
-                    }
-                }
-                catch (SQLException ex)
-                {
-                    plugin.getLogger().log(Level.WARNING, "An error occurred while counting the leftover players in the xAuth database: {0}", ex.getMessage());
-                }
-                finally
-                {
-                    if (result != null)
-                    {
-                        try
-                        {
-                            result.close();
-                        }
-                        catch (SQLException ex)
-                        {
-                        }
-                    }
-                }
-            }
-
-            if (olddb.isReady())
-            {
-                this.getid = olddb.prepare("SELECT `id` FROM `accounts` WHERE `playername` = ?");
-                this.delid = olddb.prepare("DELETE FROM TABLE `accounts` WHERE id = ?");
-            }
-        }
+        this.getpass = this.plugin.getConnection().prepare("SELECT `password` FROM `players` WHERE `username` = ?");
+        this.cpw = this.plugin.getConnection().prepare("UPDATE `players` SET `password` = ? WHERE `username` = ?");
     }
 
     // Only call this in an async task to prevent lag
-    public boolean checkPassword(String player, String checkPass)
+    // IP is for the registration
+    public boolean checkPassword(String player, String checkPass, String ip)
     {
-        String realPass = "";
-        PasswordType type = PasswordType.DEFAULT;
-        int id = -1;
-        if (olddb != null && this.getid != null)
+        if(checkPass == null || checkPass.isEmpty()) return false;
+        PlayerCheck reference = new PlayerCheck(player);
+        xAuthHook hook = this.plugin.getxAuthHook();
+        if (hook.isHooked())
+        {
+            hook.checkPassword_old(reference, checkPass);
+        }
+        
+        if(reference.isAuthenticated())
+        {
+            // Register them because it is highly likely they just joined
+            // using this authentication
+            try
+            {
+                this.plugin.getPlayerManager().register(player, checkPass, ip);
+            }
+            catch(Exception ex)
+            {
+                // Swallow the exception, might log it later on
+            }
+            return true;
+        }
+        
+        // New check
+        if(this.getpass != null)
         {
             ResultSet result = null;
             try
             {
-                this.getid.setString(1, player);
-                result = this.getid.executeQuery();
-                if (!result.next())
-                {
-                    throw new SQLException("Player not found you say?");
-                }
-                id = result.getInt("id");
-                realPass = result.getString("password");
-                type = PasswordType.getType(result.getInt("pwtype"));
+                result = Database.synchronizedExecuteQuery(getpass, getpassLock, player);
+                if(result == null || !result.next()) return false;
+                return checkPass.equals(result.getString("password"));
             }
-            catch (SQLException ex)
+            catch(SQLException ex)
             {
+                // Log it maybe?
             }
             finally
             {
-                if (result != null)
+                if(result != null)
                 {
                     try
                     {
                         result.close();
-                    }
-                    catch (SQLException ex)
-                    {
-                    }
+                    }catch(SQLException ex){}
                 }
             }
         }
-        String checkPassHash = "";
-        if (type == PasswordType.DEFAULT)
+        return false;
+    }
+    
+    public void changePassword(String name, String password)
+    {
+        Database.synchronizedExecuteUpdate(cpw, cpwLock, name, password);
+    }
+    
+    // Object for storing data as reference
+    protected static class PlayerCheck
+    {
+        enum Auth
         {
-            int saltPos = (checkPass.length() >= realPass.length() ? realPass.length() - 1 : checkPass.length());
-            String salt = realPass.substring(saltPos, saltPos + 12);
-            String hash = PasswordHandler.whirlpool(salt + checkPass);
-            checkPassHash = hash.substring(0, saltPos) + salt + hash.substring(saltPos);
+            NOPE,OK
         }
-        else if (type == PasswordType.WHIRLPOOL)
+        
+        private final String name;
+        
+        
+        private Auth authenticated;
+        
+        PlayerCheck(String name)
         {
-            checkPassHash = PasswordHandler.whirlpool(checkPass);
+            this.name = name;
+            this.authenticated = Auth.NOPE;
         }
-        else if (type == PasswordType.AUTHME_SHA256)
+        
+        public String getName()
         {
-            String salt = realPass.split("\\$")[2];
-            checkPassHash = "$SHA$" + salt + "$" + PasswordHandler.hash(PasswordHandler.hash(checkPass, "SHA-256") + salt, "SHA-256");
+            return this.name;
         }
-        else
+        
+        public void authenticate()
         {
-            checkPassHash = PasswordHandler.hash(checkPass, type.getAlgorithm());
+            this.authenticated = Auth.OK;
         }
-
-        if (checkPassHash.equals(realPass))
+        
+        public boolean isAuthenticated()
         {
-            // update hash in database to use xAuth's hashing method
-            String newHash = PasswordHandler.hash(checkPass);
-
-            try
-            {
-                this.delid.setInt(1, id);
-                this.delid.executeUpdate();
-            }
-            catch (SQLException e)
-            {
-                //xAuthLog.severe("Failed to update password hash for account: " + accountId, e);
-            }
-            finally
-            {
-                //plugin.getDbCtrl().close(conn, ps);
-            }
-
-            return true;
-        }
-        else
-        {
-            return false;
+            return this.authenticated == Auth.OK;
         }
     }
 }

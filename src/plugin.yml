@@ -8,6 +8,10 @@ commands:
     description: Login to your SCLogin account
     usage: /<command> <password>
     aliases: [l]
+  changepassword:
+    description: Change the password of your SCLogin account
+    usage: /<command> <old password> <new password> <confirm new password>
+    aliases: [changepw,cpw]
   register:
     description: Register your SCLogin account
     usage: /<command> <password> <confirm password>

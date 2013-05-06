@@ -54,6 +54,45 @@ public abstract class Database
 	public abstract ResultSet executeQuery(String query);
 
 	public abstract PreparedStatement prepare(String query);
+        
+        public static void synchronizedExecuteUpdate(final PreparedStatement stmt, final Object lock, final Object...params)
+        {
+            synchronized(lock)
+            {
+                try
+                {
+                    for(int i = 1; i <= params.length; i++)
+                    {
+                        stmt.setObject(i, params[i-1]);
+                    }
+                    stmt.executeUpdate();
+                }
+                catch(SQLException ex)
+                {
+                    // Silence?
+                }
+            }
+        }
+        
+        public static ResultSet synchronizedExecuteQuery(final PreparedStatement stmt, final Object lock, final Object...params)
+        {
+            synchronized(lock)
+            {
+                try
+                {
+                    for(int i = 1; i <= params.length; i++)
+                    {
+                        stmt.setObject(i, params[i-1]);
+                    }
+                    return stmt.executeQuery();
+                }
+                catch(SQLException ex)
+                {
+                    // Silence?
+                }
+                return null;
+            }
+        }
 
 	protected void log(String msg, Object...o)
 	{

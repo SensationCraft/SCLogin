@@ -7,6 +7,7 @@ import java.util.Map;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.sensationcraft.login.commands.ChangePasswordCommand;
 import org.sensationcraft.login.commands.LoginCommand;
 import org.sensationcraft.login.commands.RegisterCommand;
 import org.sensationcraft.login.commands.SCLoginCommand;
@@ -22,6 +23,8 @@ public class SCLogin extends JavaPlugin{
 	private PlayerManager playermngr;
 
 	private PasswordManager passwordmngr;
+        
+        private xAuthHook hook;
 
 	private Map<String, SCLoginMasterCommand> commands = new HashMap<String, SCLoginMasterCommand>();
 
@@ -37,6 +40,7 @@ public class SCLogin extends JavaPlugin{
 		this.database = new SQLite(this.getLogger(), db);
 		this.playermngr = new PlayerManager(this);
 		this.passwordmngr = new PasswordManager(this);
+                this.hook = new xAuthHook(this);
 		if(!this.initSQL())
 		{
 
@@ -108,12 +112,24 @@ public class SCLogin extends JavaPlugin{
 	{
 		return this.passwordmngr;
 	}
-	private void initCommandMap(){
+        
+        public xAuthHook getxAuthHook()
+        {
+            return this.hook;
+        }
+        
+	private void initCommandMap()
+        {
 		LoginCommand login = new LoginCommand(this);
 		this.commands.put("login", login);
 		this.commands.put("l", login);
+                
+                ChangePasswordCommand cpw = new ChangePasswordCommand(this);
+                this.commands.put("changepassword", cpw);
+                this.commands.put("changepw", cpw);
+                this.commands.put("cpw", cpw);
 		this.commands.put("register", new RegisterCommand(this));
-		this.commands.put("sclogin", new SCLoginCommand());
+		this.commands.put("sclogin", new SCLoginCommand(this));
 	}
 
 }

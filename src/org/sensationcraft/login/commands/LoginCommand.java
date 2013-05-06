@@ -21,18 +21,21 @@ public class LoginCommand extends SCLoginMasterCommand
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args)
+        {
 		if(sender instanceof Player == false)
 		{
 			sender.sendMessage("This command can only be used by players");
 			return true;
 		}
 
-		if(args.length != 2)
+		if(args.length != 1)
 		{
 			sender.sendMessage(ChatColor.RED+"Correct usage: /login <password>");
 			return true;
 		}
+                
+                final String ip = ((Player)sender).getAddress().getAddress().getHostAddress();
 
 		new BukkitRunnable()
 		{
@@ -44,7 +47,8 @@ public class LoginCommand extends SCLoginMasterCommand
 					sender.sendMessage(ChatColor.RED+"That account is not registered. Use /register <password> <confirm password> to register");
 					return;
 				}
-				if(LoginCommand.this.plugin.getPasswordManager().checkPassword(sender.getName(), args[1])){
+				if(LoginCommand.this.plugin.getPasswordManager().checkPassword(sender.getName(), args[0], ip))
+                                {
 					LoginCommand.this.plugin.getPlayerManager().doLogin(sender.getName());
 				}
 			}

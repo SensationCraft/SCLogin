@@ -3,11 +3,7 @@ package org.sensationcraft.login.password;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.UUID;
-import org.sensationcraft.login.SCLogin;
 
 public class PasswordHandler
 {

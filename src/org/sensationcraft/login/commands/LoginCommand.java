@@ -21,14 +21,14 @@ public class LoginCommand extends SCLoginMasterCommand
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args) {
 		if(sender instanceof Player == false)
 		{
 			sender.sendMessage("This command can only be used by players");
 			return true;
 		}
 
-		if(args.length != 1)
+		if(args.length != 2)
 		{
 			sender.sendMessage(ChatColor.RED+"Correct usage: /login <password>");
 			return true;
@@ -44,7 +44,9 @@ public class LoginCommand extends SCLoginMasterCommand
 					sender.sendMessage(ChatColor.RED+"That account is not registered. Use /register <password> <confirm password> to register");
 					return;
 				}
-				//TODO login player
+				if(LoginCommand.this.plugin.getPasswordManager().checkPassword(sender.getName(), args[1])){
+					LoginCommand.this.plugin.getPlayerManager().doLogin(sender.getName());
+				}
 			}
 		}.runTaskAsynchronously(this.plugin);
 

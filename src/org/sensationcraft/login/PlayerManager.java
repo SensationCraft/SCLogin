@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 public class PlayerManager
 {
 
@@ -153,6 +156,23 @@ public class PlayerManager
 		synchronized(this.statusLock)
 		{
 			this.playerStatus.remove(name);
+		}
+	}
+	public void doLogin(String name){
+		synchronized(this.statusLock){
+			this.playerStatus.remove(name);
+			this.playerStatus.put(name, Status.AUTHENTICATED);
+			Player player = this.plugin.getServer().getPlayerExact(name);
+			if(player == null){
+				this.quit(name);
+				return;
+			}
+			player.sendMessage(ChatColor.GREEN+"You have been logged in!");
+		}
+	}
+	public void register(String name, String pass){
+		synchronized(this.statusLock){
+			//TODO register player
 		}
 	}
 

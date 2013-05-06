@@ -18,14 +18,14 @@ public class RegisterCommand extends SCLoginMasterCommand{
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args) {
 		if(sender instanceof Player == false)
 		{
 			sender.sendMessage("This command can only be used by players");
 			return true;
 		}
 
-		if(args.length != 1)
+		if(args.length != 2)
 		{
 			sender.sendMessage(ChatColor.RED+"Correct usage: /login <password>");
 			return true;
@@ -38,7 +38,7 @@ public class RegisterCommand extends SCLoginMasterCommand{
 					sender.sendMessage(ChatColor.RED+"I'm sorry, you are already registered. You can use '/changepw' to change your password.");
 					return;
 				}
-				//TODO register player
+				RegisterCommand.this.manager.register(sender.getName(), args[1]);
 			}
 
 		}.runTaskAsynchronously(this.scLogin);

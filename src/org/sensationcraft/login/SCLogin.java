@@ -14,9 +14,11 @@ import org.sensationcraft.login.commands.LoginCommand;
 import org.sensationcraft.login.commands.RegisterCommand;
 import org.sensationcraft.login.commands.SCLoginCommand;
 import org.sensationcraft.login.commands.SCLoginMasterCommand;
+import org.sensationcraft.login.listeners.PlayerListener;
 import org.sensationcraft.login.sql.Database;
 import org.sensationcraft.login.sql.SQLite;
 import org.sensationcraft.login.sql.TableBuilder;
+import org.sensationcraft.login.strikes.StrikeManager;
 
 public class SCLogin extends JavaPlugin{
 
@@ -25,6 +27,8 @@ public class SCLogin extends JavaPlugin{
 	private PlayerManager playermngr;
 
 	private PasswordManager passwordmngr;
+        
+        private StrikeManager strikemngr;
         
         private xAuthHook hook;
 
@@ -49,6 +53,8 @@ public class SCLogin extends JavaPlugin{
                 this.hook = new xAuthHook(this);
                 this.playermngr = new PlayerManager(this);
 		this.passwordmngr = new PasswordManager(this);
+                this.strikemngr = new StrikeManager(this);
+                Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
                 this.initCommandMap();
 	}
 

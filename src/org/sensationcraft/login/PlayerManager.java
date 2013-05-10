@@ -72,32 +72,28 @@ public class PlayerManager
 
 	public String getLastIp(String name)
 	{
-		synchronized(this.ipLock)
-		{
-			ResultSet result = null;
-			try
-			{
-				this.registered.setString(1, name);
-				result = this.registered.executeQuery();
-				if(!result.next()) return "";
-				return result.getString("lastip");
-			}
-			catch(SQLException ex)
-			{
-				// Might log this
-			}
-			finally
-			{
-				if(result != null)
-				{
-					try
-					{
-						result.close();
-					}catch(SQLException ex){}
-				}
-			}
-			return "";
-		}
+                ResultSet result = null;
+                try
+                {
+                        result = Database.synchronizedExecuteQuery(this.ip, this.ipLock, name);
+                        if(!result.next()) return "";
+                        return result.getString("lastip");
+                }
+                catch(SQLException ex)
+                {
+                    
+                }
+                finally
+                {
+                        if(result != null)
+                        {
+                                try
+                                {
+                                        result.close();
+                                }catch(SQLException ex){}
+                        }
+                }
+                return "";
 	}
 
 	public String getEmail(String name)
@@ -183,9 +179,9 @@ public class PlayerManager
                 return false;
             }
             
+            Database.synchronizedExecuteUpdate(this.register, this.registerLock, name, pass, ip);
             
-            
-            return true;
+            return this.isRegistered(name);
 	}
 
 }

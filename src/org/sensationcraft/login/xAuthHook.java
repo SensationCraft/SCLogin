@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import org.sensationcraft.login.password.PasswordHandler;
 import org.sensationcraft.login.password.PasswordType;
 import org.sensationcraft.login.sql.Database;
-import org.sensationcraft.login.sql.SQLite;
+import org.sensationcraft.login.sql.H2;
 
 
 public class xAuthHook 
@@ -17,61 +17,86 @@ public class xAuthHook
     
     private Database olddb;
     
-    private PreparedStatement getid;
-    private final Object getid_lock = new Object();
+    private PreparedStatement getdata;
+    private final Object getdataLock = new Object();
     
     private PreparedStatement delid;
     private final Object delid_lock = new Object();
     
+    
     protected xAuthHook(SCLogin plugin)
     {
         this.plugin = plugin;
-        File oldfile = new File(plugin.getDataFolder(), "xauth.db");
-        if (oldfile.exists())
+        File[] toDelete = new File[]{new File(plugin.getDataFolder(), "xAuth.h2.db"), new File(plugin.getDataFolder(), "xAuth.lock.db")};
+        if(!toDelete[0].exists()) return;
+        olddb = new H2(plugin.getLogger(), this.plugin.getDataFolder(), "xAuth", "sa");
+        if (olddb.connect())
         {
-            olddb = new SQLite(plugin.getLogger(), oldfile);
-            if (olddb.connect())
+            ResultSet result = null;
+            try
             {
-                ResultSet result = null;
-                try
+                result = olddb.executeQuery("SELECT * FROM accounts");
+                if (!result.next())
                 {
-                    result = olddb.executeQuery("SELECT * FROM accounts");
-                    if (!result.next())
+                    plugin.getLogger().log(Level.INFO, "xAuth database seems to be completely copied, deleting old files...");
+                    olddb.close();
+                    for(File f : toDelete)
                     {
-                        olddb.close();
-                        oldfile.delete();
-                    }
-                }
-                catch (SQLException ex)
-                {
-                    plugin.getLogger().log(Level.WARNING, "An error occurred while counting the leftover players in the xAuth database: {0}", ex.getMessage());
-                }
-                finally
-                {
-                    if (result != null)
-                    {
-                        try
+                        if(f.exists())
                         {
-                            result.close();
-                        }
-                        catch (SQLException ex)
-                        {
+                            f.delete();
                         }
                     }
                 }
             }
+            catch (SQLException ex)
+            {
+                plugin.getLogger().log(Level.WARNING, "An error occurred while counting the leftover players in the xAuth database: {0}", ex.getMessage());
+            }
+            finally
+            {
+                if (result != null)
+                {
+                    try
+                    {
+                        result.close();
+                    }
+                    catch (SQLException ex)
+                    {
+                    }
+                }
+            }
+        }
 
-            if (olddb.isReady())
-            {
-                this.getid = olddb.prepare("SELECT `id` FROM `accounts` WHERE `playername` = ?");
-                this.delid = olddb.prepare("DELETE FROM TABLE `accounts` WHERE id = ?");
-            }
+        if (olddb.isReady())
+        {
+            this.getdata = olddb.prepare("SELECT `id`,`password`, `pwtype` FROM `accounts` WHERE `playername` = ?");
+            this.delid = olddb.prepare("DELETE FROM `accounts` WHERE id = ?");
+            plugin.getLogger().log(Level.INFO, "Hooked into the old xAuth database.");
         }
     }
     
     public boolean isHooked()
     {
-        return olddb != null && this.getid != null;
+        return olddb != null && this.getdata != null;
+    }
+    
+    public void unhook()
+    {
+        if(this.delid != null)
+        try
+        {
+            this.delid.close();
+        }catch(SQLException ex){}
+        
+        if(this.getdata != null)
+        try
+        {
+            this.getdata.close();
+        }catch(SQLException ex){}
+        
+        if(this.olddb != null)
+            this.olddb.close();        
     }
     
     public void checkPassword_old(PasswordManager.PlayerCheck reference, String checkPass)
@@ -83,7 +108,7 @@ public class xAuthHook
         int id = Integer.MIN_VALUE;
         try
         {
-            result = Database.synchronizedExecuteQuery(getid, getid_lock, player);
+            result = Database.synchronizedExecuteQuery(getdata, getdataLock, player);
             if (result == null || !result.next())
             {
                 throw new SQLException("Player not found you say?");
@@ -94,6 +119,8 @@ public class xAuthHook
         }
         catch (SQLException ex)
         {
+            System.out.println("Nothing found, please continue");
+            return;
         }
         finally
         {
@@ -130,6 +157,8 @@ public class xAuthHook
             checkPassHash = PasswordHandler.hash(checkPass, type.getAlgorithm());
         }
 
+        this.plugin.getLogger().log(Level.INFO, "{0}:{1}",new Object[]{checkPassHash, realPass});
+        
         if (checkPassHash.equals(realPass))
         {
             reference.authenticate();
@@ -142,7 +171,7 @@ public class xAuthHook
     {
         try
         {
-            ResultSet result  = Database.synchronizedExecuteQuery(getid, getid_lock, name);
+            ResultSet result  = Database.synchronizedExecuteQuery(getdata, getdataLock, name);
             return (result != null && result.next());
         }
         catch(SQLException ex)

@@ -6,8 +6,12 @@ import java.util.Map;
 public class TableBuilder
 {
 	private final String name;
+        
+        private String pkey;
 
 	private final Map<String, PropertyList> columns = new HashMap<String, PropertyList>();
+        
+        private final Map<String, Reference> references = new HashMap<String, Reference>();
 
 	public TableBuilder(String name)
 	{
@@ -29,7 +33,29 @@ public class TableBuilder
 			System.out.println(String.format("Field '%s' does not exist in table '%s'", field, this.name));
 			return;
 		}
+                this.pkey = field;
 	}
+        
+        public String getPrimaryKey()
+        {
+            return this.columns.get(this.pkey) != null ? this.pkey : null;
+        }
+        
+        public void addReference(String field, String table, String column)
+        {
+            if(this.columns.get(field) == null)
+            {
+                    // This might need some cleaning up, like an actual Logger reference
+                    System.out.println(String.format("Field '%s' does not exist in table '%s'", field, this.name));
+                    return;
+            }
+            this.references.put(field, new Reference(table, column));
+        }
+        
+        public Map<String, Reference> getReferences()
+        {
+            return this.references;
+        }
 
 	public Map<String, PropertyList> getColumns()
 	{
@@ -41,9 +67,9 @@ public class TableBuilder
 		return this.name;
 	}
 
-	public boolean createTable(Database db)
+	public void createTable(Database db)
 	{
-		return db.createTable(this.getTableName(), this.getColumns());
+            db.createTable(this);
 	}
 
 }

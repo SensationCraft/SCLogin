@@ -3,6 +3,8 @@ package org.sensationcraft.login;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import org.bukkit.Bukkit;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -27,73 +29,69 @@ public class SCLogin extends JavaPlugin{
         private xAuthHook hook;
 
 	private Map<String, SCLoginMasterCommand> commands = new HashMap<String, SCLoginMasterCommand>();
+        
+        public static final boolean debug = false;
 
 	@Override
 	public void onEnable(){
 		this.getLogger().info("Registering listeners...");
 		this.getServer().getPluginManager().registerEvents(new AuthenticationListener(this), this);
 		this.getLogger().info("Initializing commands...");
-		this.initCommandMap();
-
 		this.getDataFolder().mkdirs();
 		File db = new File(this.getDataFolder(), "SClogin.db");
 		this.database = new SQLite(this.getLogger(), db);
-		this.playermngr = new PlayerManager(this);
-		this.passwordmngr = new PasswordManager(this);
-                this.hook = new xAuthHook(this);
 		if(!this.initSQL())
 		{
-
+                    getLogger().log(Level.SEVERE, "Could not connect to database!");
+                    Bukkit.getPluginManager().disablePlugin(this);
+                    return;
 		}
-		/*
-                TableBuilder tb = new TableBuilder("test");
-                tb.addColumn("val1", "varchar(16)").addProperty("NOT NULL");
-                sqlite.connect();
-                if(!sqlite.checkTable("test"))
-                {
-                    tb.createTable(sqlite);
-                }
-                sqlite.executeQuery("INSERT INTO `test`(`val1`) VALUES('hello world')");
-                ResultSet result = sqlite.executeQuery("SELECT * FROM `test`");
-                try
-                {
-                    while(result.next())
-                    {
-                        System.out.println("Found: "+result.getString("val1"));
-                    }
-                }
-                catch(SQLException ex)
-                {
-
-                }*/
-
+                this.hook = new xAuthHook(this);
+                this.playermngr = new PlayerManager(this);
+		this.passwordmngr = new PasswordManager(this);
+                this.initCommandMap();
 	}
 
-	/**
-	 * Initializes the SQL connection and the table structure
-	 * @return whether the connection was established and if
-	 * the tables were either found or created with success
-	 */
+        @Override
+        public void onDisable()
+        {
+            if(this.hook != null && this.hook.isHooked())
+            {
+                this.hook.unhook();
+            }
+            
+            if(this.database != null)
+                this.database.close();
+        }
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String name, String[] args){
 		SCLoginMasterCommand scLoginCommand = this.commands.get(command.getName().toLowerCase());
 		return scLoginCommand == null ? false:scLoginCommand.execute(sender, args);
 	}
+        
+        /**
+	 * Initializes the SQL connection and the table structure
+	 * @return whether the connection was established and if
+	 * the tables were either found or created with success
+	 */
 	private boolean initSQL()
 	{
 		if(!this.database.connect()) return false;
 
+                getLogger().info("Connection was successfull");
+                
 		if(!this.database.checkTable("players"))
 		{
 			TableBuilder players = new TableBuilder("players");
-			players.addColumn("id", "INT").addProperty("NOT NULL").addProperty("AUTO_INCREMENT");
+			players.addColumn("id", "INT");
 			players.addColumn("username", "varchar(16)").addProperty("UNIQUE").addProperty("NOT NULL");
 			players.addColumn("password", "varchar(100)").addProperty("NOT NULL");
 			players.addColumn("lastip", "varchar(16)").addProperty("NOT NULL");
-			players.addColumn("email", "varchar(50)").addProperty("NOT NULL").addProperty("DEFAULT ''");
+			players.addColumn("email", "varchar(50)").addProperty("DEFAULT ''");
+                        players.setPrimaryKey("id");
 			players.createTable(this.database);
 		}
-
 		return this.database.checkTable("players");
 	}
 

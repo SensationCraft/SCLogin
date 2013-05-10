@@ -51,6 +51,11 @@ public class LoginCommand extends SCLoginMasterCommand
                                 {
 					LoginCommand.this.plugin.getPlayerManager().doLogin(sender.getName());
 				}
+                                else
+                                {
+                                    sender.sendMessage(ChatColor.RED+"Incorrect password!");
+                                    return;
+                                }
 			}
 		}.runTaskAsynchronously(this.plugin);
 

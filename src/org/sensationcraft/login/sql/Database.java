@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.sensationcraft.login.SCLogin;
 
 public abstract class Database
 {
@@ -49,7 +50,7 @@ public abstract class Database
 
 	public abstract boolean checkTable(String name);
 
-	public abstract boolean createTable(String name, Map<String, PropertyList> columns);
+	public abstract void createTable(TableBuilder builder);
 
 	public abstract ResultSet executeQuery(String query);
 
@@ -69,7 +70,7 @@ public abstract class Database
                 }
                 catch(SQLException ex)
                 {
-                    // Silence?
+                    ex.printStackTrace();
                 }
             }
         }
@@ -88,7 +89,7 @@ public abstract class Database
                 }
                 catch(SQLException ex)
                 {
-                    // Silence?
+                    ex.printStackTrace();
                 }
                 return null;
             }
@@ -96,6 +97,14 @@ public abstract class Database
 
 	protected void log(String msg, Object...o)
 	{
+                if(SCLogin.debug)
+                {
+                    StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+                    for(StackTraceElement t : trace)
+                    {
+                        System.out.println(String.format("Called by %s, in %s on %d", t.getMethodName(), t.getFileName(), t.getLineNumber()));
+                    }
+                }
 		this.log.log(Level.SEVERE, String.format(msg, o));
 	}
 }

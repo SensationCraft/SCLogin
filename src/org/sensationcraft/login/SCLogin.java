@@ -98,7 +98,15 @@ public class SCLogin extends JavaPlugin{
                         players.setPrimaryKey("id");
 			players.createTable(this.database);
 		}
-		return this.database.checkTable("players");
+                
+                if(!this.database.checkTable("lockouts"))
+                {
+                    TableBuilder lockouts = new TableBuilder("lockouts");
+                    lockouts.addColumn("ip", "VARCHAR(16)").addProperty("UNIQUE").addProperty("NOT NULL");
+                    lockouts.addColumn("till", "TIMESTAMP").addProperty("NOT NULL");
+                    lockouts.createTable(this.database);
+                }
+		return this.database.checkTable("players") && this.database.checkTable("lockouts");
 	}
 
 	public Database getConnection()
@@ -116,6 +124,11 @@ public class SCLogin extends JavaPlugin{
 	{
 		return this.passwordmngr;
 	}
+        
+        public StrikeManager getStrikeManager()
+        {
+                return this.strikemngr;
+        }
         
         public xAuthHook getxAuthHook()
         {

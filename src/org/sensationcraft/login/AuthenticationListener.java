@@ -1,5 +1,6 @@
 package org.sensationcraft.login;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,10 +20,11 @@ public class AuthenticationListener implements Listener{
 		this.scLogin = scLogin;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerLogin(AsyncPlayerPreLoginEvent e)
 	{
 		String name = e.getName();
+                Bukkit.broadcastMessage(String.format("Yes, %s joined", name));
 		if(!name.matches("[a-z*A-Z*0-9*_]"))
 		{
 			e.disallow(Result.KICK_OTHER, "Your username contains illegal characters.");
@@ -33,12 +35,22 @@ public class AuthenticationListener implements Listener{
 			e.disallow(Result.KICK_OTHER, "You are already online!");
 			return;
 		}
+                Bukkit.broadcastMessage("Checking if registered");
 		if(this.scLogin.getPlayerManager().isRegistered(name))
 		{
+                        Bukkit.broadcastMessage("Which seems to be the case");
 			String ip = this.scLogin.getPlayerManager().getLastIp(name);
-			if(!ip.equals(e.getAddress().getHostAddress()))
+                        if(this.scLogin.getStrikeManager().isIpLockedout(ip))
+                        {
+                            e.disallow(Result.KICK_OTHER, "Your ip is locked out because you surpassed the amount of tries when entering your password");
+                            return;
+                        }
+                        Bukkit.broadcastMessage(ip+":"+e.getAddress().getHostAddress());
+                        String email = this.scLogin.getPlayerManager().getEmail(name);
+                        email = "derp";
+			if(!ip.equals(e.getAddress().getHostAddress()) && email != null && !email.isEmpty())
 			{
-				String email = this.scLogin.getPlayerManager().getEmail(name);
+				
 				if(email == null || email.isEmpty())
 				{
 					e.disallow(Result.KICK_OTHER, "Your ip does not match with the last ip you authenticated with. As you do not have an email set, please contact a member of staff about this!");

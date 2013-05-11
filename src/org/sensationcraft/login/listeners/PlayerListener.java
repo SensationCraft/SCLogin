@@ -31,7 +31,7 @@ public class PlayerListener implements Listener
         if(!plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
         {
             event.setTo(event.getFrom());
-            event.setCancelled(true);
+            //event.setCancelled(true);
         }
     }
     

@@ -193,6 +193,7 @@ public class SQLite extends Database
 		}
 		catch(SQLException ex)
 		{
+                        ex.printStackTrace();
 			this.log("An exception has occurred while preparing query '%s': %s", query, ex.getMessage());
 		}
 		return stmt;

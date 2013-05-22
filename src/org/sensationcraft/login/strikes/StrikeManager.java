@@ -28,13 +28,15 @@ public class StrikeManager
     
     private final Object dellockLock = new Object();
     
-    Map<String, Integer> strikePoints = new HashMap<String, Integer>();
+    Map<String, Integer> lowPriority = new HashMap<String, Integer>();
+    
+    Map<String, Integer> highPriority = new HashMap<String, Integer>();
     
     private final int MAX_POINTS = 100;
-    
-    private final int MAX_TRY_POINTS = 300;
-    
+        
     private final int TEMP_LOCKOUT = 1000*3600;
+    
+    private final String timeout;
     
     public StrikeManager(SCLogin plugin)
     {
@@ -42,35 +44,50 @@ public class StrikeManager
         this.lockip = this.plugin.getConnection().prepare("INSERT INTO `lockouts`(`ip`, `till`) VALUES(?,?)");
         this.checkip = this.plugin.getConnection().prepare("SELECT `till` FROM `lockouts` WHERE `ip` = ?");
         this.dellock = this.plugin.getConnection().prepare("DELETE FROM `lockouts` WHERE `ip` = ?");
+        StringBuilder to = new StringBuilder();
+        int y = (int) Math.floor(TEMP_LOCKOUT / (1000*3600*24*365));
+        int w = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y))/(1000*3600*24*7));
+        int d = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w)) / (1000*3600*24));
+        int h = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w) - (1000*3600*24*d)) / (1000*3600));
+        int m = (int) Math.floor(0);
+        this.timeout = to.toString();
     }
     
-    public void addStrikePoints(Player player, int points)
+    public void addStrikePoints(Player player, int points, boolean highPriority)
     {
+        Map<String, Integer> strikePoints = highPriority ? this.highPriority : this.lowPriority;
+        
         String name = player.getName();
-        if(!this.strikePoints.containsKey(name))
+        if(!strikePoints.containsKey(name))
         {
-            this.strikePoints.put(name, points);
+            strikePoints.put(name, points);
         }
         else
         {
-            this.strikePoints.put(name, points + this.strikePoints.get(name));
+            strikePoints.put(name, points + strikePoints.get(name));
         }
         
         String ip = player.getAddress().getAddress().getHostAddress();
-        if(this.strikePoints.get(name) > MAX_TRY_POINTS)
+        if(strikePoints.get(name) > MAX_POINTS)
         {
-            Bukkit.banIP(ip);
-        }
-        else if(this.strikePoints.get(name) > MAX_POINTS)
-        {
-            resetStrikePoints(name);
-            Database.synchronizedExecuteUpdate(lockip, lockipLock, new java.sql.Timestamp(System.currentTimeMillis()+TEMP_LOCKOUT), ip);
+            resetStrikePoints(name, highPriority);
+            if(highPriority)
+            {
+                Database.synchronizedExecuteUpdate(lockip, lockipLock, new java.sql.Timestamp(System.currentTimeMillis()+TEMP_LOCKOUT), ip);
+                
+                player.kickPlayer(String.format("Your ip has been banned for %s", this.timeout));
+            }
+            else
+            {
+                player.kickPlayer("You are required to log in first!");
+            }
         }
     }
     
-    public void resetStrikePoints(String name)
+    public void resetStrikePoints(String name, boolean highPriority)
     {
-        this.strikePoints.remove(name);
+        if(highPriority) this.highPriority.remove(name);
+        this.lowPriority.remove(name);
     }
     
     public boolean isIpLockedout(final String ip)

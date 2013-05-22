@@ -1,5 +1,6 @@
 package org.sensationcraft.login;
 
+import org.sensationcraft.login.listeners.AuthenticationListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.sensationcraft.login.commands.LoginCommand;
 import org.sensationcraft.login.commands.RegisterCommand;
 import org.sensationcraft.login.commands.SCLoginCommand;
 import org.sensationcraft.login.commands.SCLoginMasterCommand;
+import org.sensationcraft.login.listeners.InventoryListener;
 import org.sensationcraft.login.listeners.PlayerListener;
 import org.sensationcraft.login.sql.Database;
 import org.sensationcraft.login.sql.SQLite;
@@ -55,6 +57,7 @@ public class SCLogin extends JavaPlugin{
 		this.passwordmngr = new PasswordManager(this);
                 this.strikemngr = new StrikeManager(this);
                 Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
+                Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
                 this.initCommandMap();
 	}
 

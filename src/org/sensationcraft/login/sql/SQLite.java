@@ -88,7 +88,6 @@ public class SQLite extends Database
 	{
 		if(this.initialize())
 		{
-                        this.log("Initialized... \nMaking connection...");
 			try
 			{
 				this.con = DriverManager.getConnection("jdbc:sqlite:" + this.dbfile.getAbsolutePath());

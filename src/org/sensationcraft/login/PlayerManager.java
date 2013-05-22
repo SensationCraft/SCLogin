@@ -38,9 +38,10 @@ public class PlayerManager
 	protected PlayerManager(SCLogin plugin)
 	{
 		this.plugin = plugin;
-		this.registered = this.plugin.getConnection().prepare("SELECT * FROM `players` WHERE username = ?");
-		this.ip = this.plugin.getConnection().prepare("SELECT `lastip` FROM `players` WHERE username = ?");
+		this.registered = this.plugin.getConnection().prepare("SELECT * FROM `players` WHERE `username` = ?");
+		this.ip = this.plugin.getConnection().prepare("SELECT `lastip` FROM `players` WHERE `username` = ?");
 		this.register = this.plugin.getConnection().prepare("INSERT INTO `players`(`username`, `password`, `lastip`, `email`) VALUES(?, ?, ?, ?)");
+                this.email = this.plugin.getConnection().prepare("SELECT `email` FROM `players` WHERE `username` = ?");
 	}
 
 	public boolean isRegistered(String name)
@@ -98,32 +99,28 @@ public class PlayerManager
 
 	public String getEmail(String name)
 	{
-		synchronized(this.emailLock)
-		{
-			ResultSet result = null;
-			try
-			{
-				this.email.setString(1, name);
-				result = this.registered.executeQuery();
-				if(!result.next()) return "";
-				return result.getString("email");
-			}
-			catch(SQLException ex)
-			{
-				// Might log this
-			}
-			finally
-			{
-				if(result != null)
-				{
-					try
-					{
-						result.close();
-					}catch(SQLException ex){}
-				}
-			}
-			return "";
-		}
+                ResultSet result = null;
+                try
+                {
+                        result = Database.synchronizedExecuteQuery(email, emailLock, name);
+                        if(!result.next()) return "";
+                        return result.getString("email");
+                }
+                catch(SQLException ex)
+                {
+                        // Might log this
+                }
+                finally
+                {
+                        if(result != null)
+                        {
+                                try
+                                {
+                                        result.close();
+                                }catch(SQLException ex){}
+                        }
+                }
+                return "";
 	}
 
 	public boolean isLoggedIn(String name)

@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.IllegalFormatException;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
@@ -29,19 +30,39 @@ public class PlayerManager
         private PreparedStatement register;
         private final Object registerLock = new Object();
 
+        private PreparedStatement unregister;
+        private final Object unregisterLock = new Object();
+        
 	private PreparedStatement ip;
 	private final Object ipLock = new Object();
 
 	private PreparedStatement email;
 	private final Object emailLock = new Object();
+        
+        private PreparedStatement isLocked;
+        private final Object isLockedLock = new Object();
+        
+        private PreparedStatement setLock;
+        private final Object setLockLock = new Object();
+        
+        private PreparedStatement getActiveCount;
+        private final Object getActiveCountLock = new Object();
+        
+        private PreparedStatement getLockedCount;
+        private final Object getLockedCountLock = new Object();
 
 	protected PlayerManager(SCLogin plugin)
 	{
 		this.plugin = plugin;
 		this.registered = this.plugin.getConnection().prepare("SELECT * FROM `players` WHERE `username` = ?");
 		this.ip = this.plugin.getConnection().prepare("SELECT `lastip` FROM `players` WHERE `username` = ?");
-		this.register = this.plugin.getConnection().prepare("INSERT INTO `players`(`username`, `password`, `lastip`, `email`) VALUES(?, ?, ?, ?)");
+		this.register = this.plugin.getConnection().prepare("INSERT INTO `players`(`username`, `password`, `lastip`, `email`, `locked`) VALUES(?, ?, ?, ?, ?)");
                 this.email = this.plugin.getConnection().prepare("SELECT `email` FROM `players` WHERE `username` = ?");
+                this.unregister = this.plugin.getConnection().prepare("DELETE FROM `players` WHERE `username` = ?");
+                this.isLocked = this.plugin.getConnection().prepare("SELECT locked FROM `players` WHERE `username` = ?");
+                this.setLock = this.plugin.getConnection().prepare("UPDATE locked FROM `players` SET `locked` = ? WHERE `username` = ?");
+                this.getActiveCount = this.plugin.getConnection().prepare("SELECT COUNT(*) as count FROM `players` WHERE `locked` > 0");
+                this.getLockedCount = this.plugin.getConnection().prepare("SELECT COUNT(*) as count FROM `players` WHERE `locked` = 0");
 	}
 
 	public boolean isRegistered(String name)
@@ -176,9 +197,97 @@ public class PlayerManager
                 return false;
             }
             
-            Database.synchronizedExecuteUpdate(this.register, this.registerLock, name, pass, ip);
+            Database.synchronizedExecuteUpdate(this.register, this.registerLock, name, pass, ip, 0);
             
             return this.isRegistered(name);
 	}
+        
+        public boolean unregister(String name)
+        {
+            if(!this.isRegistered(name))
+            {
+                return false;
+            }
+            
+            Database.synchronizedExecuteUpdate(unregister, unregisterLock, name);
+            
+            return this.isRegistered(name);
+        }
+        
+        public boolean isLocked(String name)
+        {
+            ResultSet result = Database.synchronizedExecuteQuery(this.isLocked, this.isLockedLock, name);
+            try
+            {
+                if(result == null || !result.next()) return false;
+                return result.getInt("locked") > 0;
+            }
+            catch(SQLException ex)
+            {
+                // Swallow the exception
+            }
+            return false;
+        }
+        
+        public boolean setLocked(String name, boolean flag)
+        {
+            Database.synchronizedExecuteUpdate(this.setLock, this.setLockLock, (flag ? 1 : 0), name);
+            return isLocked(name);
+        }
+        
+        public String getProfile(String name)
+        {
+            if(!this.isRegistered(name))
+            {
+                return ChatColor.RED+"This player has not played before.";
+            }
+            
+            StringBuilder profile = new StringBuilder("----- SCLogin profile -----\n");
+            profile.append("Name: ").append(name).append("\n");
+            boolean isOnline = this.isOnline(name);
+            profile.append("Online: ").append(getValueColour(isOnline)).append(isOnline).append(ChatColor.RESET).append("\n");
+            boolean isAuthenticated = this.isLoggedIn(name);
+            profile.append("Authenticated: ").append(getValueColour(isAuthenticated)).append(isAuthenticated).append(ChatColor.RESET).append("\n");
+            profile.append("IP: ").append(this.getLastIp(name)).append("\n");
+            profile.append("Last authentication: ").append("not implemented yet").append("\n");
+            boolean isLocked = isLocked(name);
+            profile.append("Locked: ").append(getValueColour(isLocked)).append(isLocked).append(ChatColor.RESET).append("\n");
+            return profile.append("---------------------------").toString();
+        }
+        
+        private ChatColor getValueColour(boolean flag)
+        {
+            return flag ? ChatColor.GREEN : ChatColor.RED;
+        }
+        
+        public String getCount(String what)
+        {
+            if(what == null) return null;
+            ResultSet result = null;
+            if(what.startsWith("a"))
+            {
+                result = Database.synchronizedExecuteQuery(this.getActiveCount, this.getActiveCountLock);
+            }
+            else if(what.startsWith("l"))
+            {
+                result = Database.synchronizedExecuteQuery(this.getLockedCount, this.getLockedCountLock);
+            }
+            try
+            {
+                if(result != null && result.next())
+                {
+                    return String.format("%d", result.getInt("count"));
+                }
+            }
+            catch(SQLException ex)
+            {
+                // Swallow the exception
+            }
+            catch(IllegalFormatException ex)
+            {
+                // Swallow the exception
+            }
+            return null;
+        }
 
 }

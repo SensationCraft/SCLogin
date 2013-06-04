@@ -25,6 +25,7 @@ public class PlayerListener implements Listener
         if(!plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
         {
             event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 50, false);
         }
     }
     
@@ -35,6 +36,7 @@ public class PlayerListener implements Listener
         {
             event.setTo(event.getFrom());
             //event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 1, false);
         }
     }
     
@@ -57,6 +59,7 @@ public class PlayerListener implements Listener
         {
             event.setDamage(0);
             event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(player, 10, false);
         }
     }
     
@@ -69,6 +72,7 @@ public class PlayerListener implements Listener
         {
             event.setDamage(0);
             event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(player, 10, false);
         }
     }
     
@@ -79,6 +83,7 @@ public class PlayerListener implements Listener
         if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
         {
             event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
         }
     }
     
@@ -90,6 +95,7 @@ public class PlayerListener implements Listener
         {
             event.setCancelled(true);
             event.setBuild(false);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
         }
     }
     
@@ -100,6 +106,7 @@ public class PlayerListener implements Listener
         if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
         {
             event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
         }
     }
     
@@ -120,6 +127,7 @@ public class PlayerListener implements Listener
         if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
         {
             event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
         }
     }
     
@@ -130,6 +138,7 @@ public class PlayerListener implements Listener
         if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
         {
             event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
         }
     }
     
@@ -140,6 +149,7 @@ public class PlayerListener implements Listener
         if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
         {
             event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
         }
     }
     
@@ -154,6 +164,7 @@ public class PlayerListener implements Listener
             {
                 event.setCancelled(true);
                 event.setMessage("/thiscommanddoesnotexistmate");
+                plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 20, false);
             }
         }
     }

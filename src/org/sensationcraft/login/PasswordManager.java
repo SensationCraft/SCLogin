@@ -78,9 +78,14 @@ public class PasswordManager
         return false;
     }
     
-    public void changePassword(String name, String password)
+    public boolean changePassword(String name, String password)
     {
+        if(this.plugin.getPlayerManager().isRegistered(name))
+        {
+            return false;
+        }
         Database.synchronizedExecuteUpdate(cpw, cpwLock, name, password);
+        return true;
     }
     
     // Object for storing data as reference

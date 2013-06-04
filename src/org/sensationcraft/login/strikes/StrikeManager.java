@@ -44,12 +44,39 @@ public class StrikeManager
         this.lockip = this.plugin.getConnection().prepare("INSERT INTO `lockouts`(`ip`, `till`) VALUES(?,?)");
         this.checkip = this.plugin.getConnection().prepare("SELECT `till` FROM `lockouts` WHERE `ip` = ?");
         this.dellock = this.plugin.getConnection().prepare("DELETE FROM `lockouts` WHERE `ip` = ?");
-        StringBuilder to = new StringBuilder();
+        StringBuilder to = new StringBuilder("Too many illegal activities while not logged in. Your ip has been temporarily locked out for");
         int y = (int) Math.floor(TEMP_LOCKOUT / (1000*3600*24*365));
         int w = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y))/(1000*3600*24*7));
         int d = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w)) / (1000*3600*24));
         int h = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w) - (1000*3600*24*d)) / (1000*3600));
-        int m = (int) Math.floor(0);
+        int m = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w) - (1000*3600*24*d) - (1000*3600*h)) / (1000*60));
+        int s = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w) - (1000*3600*24*d) - (1000*3600*h) - (1000*60*m)) / (1000));
+                
+        if(y > 0) 
+        {
+            to.append(" ").append(y).append(" years");
+        }
+        if(w > 0)
+        {
+            to.append(" ").append(w).append(" weeks");
+        }
+        if(d > 0)
+        {
+            to.append(" ").append(d).append(" days");
+        }
+        if(h > 0)
+        {
+            to.append(" ").append(w).append(" hours");
+        }
+        if(m > 0)
+        {
+            to.append(" ").append(w).append(" minutes");
+        }
+        if(s > 0)
+        {
+            to.append(" ").append(w).append(" seconds");
+        }
+        
         this.timeout = to.toString();
     }
     

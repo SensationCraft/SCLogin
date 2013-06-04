@@ -6,15 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sensationcraft.login.commands.ChangePasswordCommand;
 import org.sensationcraft.login.commands.LoginCommand;
+import org.sensationcraft.login.commands.LogoutCommand;
+import org.sensationcraft.login.commands.QuitCommand;
 import org.sensationcraft.login.commands.RegisterCommand;
 import org.sensationcraft.login.commands.SCLoginCommand;
 import org.sensationcraft.login.commands.SCLoginMasterCommand;
+import org.sensationcraft.login.commands.UnregisterCommand;
 import org.sensationcraft.login.listeners.InventoryListener;
 import org.sensationcraft.login.listeners.PlayerListener;
 import org.sensationcraft.login.sql.Database;
@@ -37,9 +42,14 @@ public class SCLogin extends JavaPlugin{
 	private Map<String, SCLoginMasterCommand> commands = new HashMap<String, SCLoginMasterCommand>();
         
         public static final boolean debug = false;
-
+        
+        private static SCLogin instance;
+        
 	@Override
-	public void onEnable(){
+	public void onEnable()
+        {
+                instance = this;
+            
 		this.getLogger().info("Registering listeners...");
 		this.getServer().getPluginManager().registerEvents(new AuthenticationListener(this), this);
 		this.getLogger().info("Initializing commands...");
@@ -59,6 +69,10 @@ public class SCLogin extends JavaPlugin{
                 Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
                 Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
                 this.initCommandMap();
+                for(Player player : Bukkit.getOnlinePlayers())
+                {
+                    player.sendMessage(ChatColor.GREEN+"Server reloaded, you have been automagically logged out.");
+                }
 	}
 
         @Override
@@ -71,8 +85,15 @@ public class SCLogin extends JavaPlugin{
             
             if(this.database != null)
                 this.database.close();
+            
+            instance = null;
         }
 	
+        public static SCLogin getInstance()
+        {
+            return instance;
+        }
+        
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String name, String[] args){
 		SCLoginMasterCommand scLoginCommand = this.commands.get(command.getName().toLowerCase());
@@ -98,6 +119,7 @@ public class SCLogin extends JavaPlugin{
 			players.addColumn("password", "varchar(100)").addProperty("NOT NULL");
 			players.addColumn("lastip", "varchar(16)").addProperty("NOT NULL");
 			players.addColumn("email", "varchar(50)").addProperty("DEFAULT ''");
+                        players.addColumn("locked", "TINYINT").addProperty("DEFAULT 0");
                         players.setPrimaryKey("id");
 			players.createTable(this.database);
 		}
@@ -149,7 +171,13 @@ public class SCLogin extends JavaPlugin{
                 this.commands.put("changepw", cpw);
                 this.commands.put("cpw", cpw);
 		this.commands.put("register", new RegisterCommand(this));
+                this.commands.put("unregister", new UnregisterCommand(this));
 		this.commands.put("sclogin", new SCLoginCommand(this));
+                this.commands.put("logout", new LogoutCommand(this));
+                
+                QuitCommand quit = new QuitCommand(this);
+                this.commands.put("quit", quit);
+                this.commands.put("q", quit);
 	}
 
 }

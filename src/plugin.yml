@@ -8,6 +8,13 @@ commands:
     description: Login to your SCLogin account
     usage: /<command> <password>
     aliases: [l]
+  logout:
+    description: Logout from your SCLogin account
+    usage: /<command>
+  quit:
+    description: Safe quit command, useful for evading combat loggers
+    usage: /<command>
+    aliases: [q]
   changepassword:
     description: Change the password of your SCLogin account
     usage: /<command> <old password> <new password> <confirm new password>
@@ -18,3 +25,6 @@ commands:
   sclogin:
     description: administration command for trusted staff
     usage: /<command> [subcommand]
+  unregister:
+    description: unregisters the account you are logged in with
+    usage: /<command>

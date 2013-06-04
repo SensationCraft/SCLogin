@@ -75,19 +75,15 @@ public class AuthenticationListener implements Listener{
 			e.disallow(Result.KICK_OTHER, "You are already online!");
 			return;
 		}
-                Bukkit.broadcastMessage("Checking if registered");
 		if(this.scLogin.getPlayerManager().isRegistered(name))
 		{
-                        Bukkit.broadcastMessage("Which seems to be the case");
 			String ip = this.scLogin.getPlayerManager().getLastIp(name);
                         if(this.scLogin.getStrikeManager().isIpLockedout(ip))
                         {
                             e.disallow(Result.KICK_OTHER, "Your ip is locked out because you surpassed the amount of tries when entering your password");
                             return;
                         }
-                        Bukkit.broadcastMessage(ip+":"+e.getAddress().getHostAddress());
                         String email = this.scLogin.getPlayerManager().getEmail(name);
-                        email = "derp";
 			if(!ip.equals(e.getAddress().getHostAddress()) && email != null && !email.isEmpty())
 			{
 				

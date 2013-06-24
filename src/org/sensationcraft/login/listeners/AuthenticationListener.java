@@ -19,11 +19,11 @@ import org.sensationcraft.login.SCLogin;
 
 public class AuthenticationListener implements Listener{
 
-	private SCLogin scLogin;
+	private SCLogin plugin;
 
 	public AuthenticationListener(SCLogin scLogin)
         {
-		this.scLogin = scLogin;
+		this.plugin = scLogin;
 	}
         
         /**
@@ -36,6 +36,7 @@ public class AuthenticationListener implements Listener{
             final String name = event.getPlayer().getName();
             final InetAddress address = event.getAddress();
             final Player player = event.getPlayer();
+            this.plugin.logTiming("Joining, starting async", name);
             new BukkitRunnable()
             {
                 @Override
@@ -54,10 +55,12 @@ public class AuthenticationListener implements Listener{
                                 System.out.println(String.format("Kicked player %s for %s", player.getName(), event.getKickMessage()));
                                 player.kickPlayer(event.getKickMessage());
                             }
-                        }.runTask(AuthenticationListener.this.scLogin);      
+                        }.runTask(AuthenticationListener.this.plugin);      
                     }
+                    AuthenticationListener.this.plugin.logTiming("Joining, ending async", name);
                 }
-            }.runTaskAsynchronously(scLogin);
+            }.runTaskAsynchronously(plugin);
+            this.plugin.logTiming("Joining, ending sync");
         }
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -70,20 +73,20 @@ public class AuthenticationListener implements Listener{
 			e.disallow(Result.KICK_OTHER, "Your username contains illegal characters.");
 			return;
 		}
-		if(this.scLogin.getPlayerManager().isOnline(e.getName()))
+		if(this.plugin.getPlayerManager().isOnline(e.getName()))
 		{
 			e.disallow(Result.KICK_OTHER, "You are already online!");
 			return;
 		}
-		if(this.scLogin.getPlayerManager().isRegistered(name))
+		if(this.plugin.getPlayerManager().isRegistered(name))
 		{
-			String ip = this.scLogin.getPlayerManager().getLastIp(name);
-                        if(this.scLogin.getStrikeManager().isIpLockedout(ip))
+			String ip = this.plugin.getPlayerManager().getLastIp(name);
+                        if(this.plugin.getStrikeManager().isIpLockedout(ip))
                         {
                             e.disallow(Result.KICK_OTHER, "Your ip is locked out because you surpassed the amount of tries when entering your password");
                             return;
                         }
-                        String email = this.scLogin.getPlayerManager().getEmail(name);
+                        String email = this.plugin.getPlayerManager().getEmail(name);
 			if(!ip.equals(e.getAddress().getHostAddress()) && email != null && !email.isEmpty())
 			{
 				
@@ -99,7 +102,7 @@ public class AuthenticationListener implements Listener{
                                 return;
 			}
 		}
-                this.scLogin.getPlayerManager().join(name);
+                this.plugin.getPlayerManager().join(name);
 	}
         
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -111,7 +114,7 @@ public class AuthenticationListener implements Listener{
 			@Override
 			public void run()
 			{
-				if(AuthenticationListener.this.scLogin.getPlayerManager().isRegistered(player.getName()))
+				if(AuthenticationListener.this.plugin.getPlayerManager().isRegistered(player.getName()))
 				{
 					player.sendMessage(ChatColor.RED+"Welcome back to SensationCraft. Please login using /login <password>");
 				}
@@ -122,20 +125,20 @@ public class AuthenticationListener implements Listener{
 				// This is assumed to be thread-safe as it uses
 				// a synchronized list for the chat packets
 			}
-		}.runTaskLaterAsynchronously(this.scLogin, 1L);
+		}.runTaskLaterAsynchronously(this.plugin, 1L);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent e)
 	{
-		this.scLogin.getPlayerManager().quit(e.getPlayer().getName());
+		this.plugin.getPlayerManager().quit(e.getPlayer().getName());
 	}
         
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onKick(PlayerKickEvent event)
         {
             String name = event.getPlayer().getName();
-            PlayerManager pm = this.scLogin.getPlayerManager();
+            PlayerManager pm = this.plugin.getPlayerManager();
             if(event.getReason().startsWith("Kicked for flying") && pm.isOnline(name) && !pm.isLoggedIn(name))
                 event.setCancelled(true);
 

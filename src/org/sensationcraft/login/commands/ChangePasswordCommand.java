@@ -21,25 +21,31 @@ public class ChangePasswordCommand extends SCLoginMasterCommand
     @Override
     public boolean execute(CommandSender sender, final String[] args)
     {
+        this.plugin.logTiming("/cpw for %s", sender.getName());
         if(sender instanceof Player == false)
         {
+            this.plugin.logTiming("/cpw for %s end", sender.getName());
             sender.sendMessage("This command can only be used by players");
             return true;
         }
         
         if(args.length != 3)
         {
+            this.plugin.logTiming("/cpw for %s end", sender.getName());
             sender.sendMessage(ChatColor.RED+"Incorrect syntax! Correct usage: /changepassword <old password> <new password> <confirm new password>");
             return true;
         }
         
         if(!args[1].equals(args[2]))
         {
+            this.plugin.logTiming("/cpw for %s end", sender.getName());
             sender.sendMessage(ChatColor.RED+"Your entered password and the confirmation password don't seem to match.");
             return true;
         }
         
         final Player player = (Player)sender;
+        
+        this.plugin.logTiming("/cpw for %s, starting asyncing", sender.getName());
         
         new BukkitRunnable()
         {
@@ -55,9 +61,10 @@ public class ChangePasswordCommand extends SCLoginMasterCommand
                         pwmanager.changePassword(name, args[1]);
                         player.sendMessage(ChatColor.GREEN+"Changed the password.");
                     }
-                    
+                    ChangePasswordCommand.this.plugin.logTiming("/cpw for %s ending async", player.getName());
                 }
         }.runTaskAsynchronously(this.plugin);
+        this.plugin.logTiming("/cpw for %s ending command, please continue", sender.getName());
         return true;
     }
 

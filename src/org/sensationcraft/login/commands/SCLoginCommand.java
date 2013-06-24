@@ -28,14 +28,18 @@ public class SCLoginCommand extends SCLoginMasterCommand
 	
 	@Override
 	public boolean execute(final CommandSender sender, final String[] args) {
-		
+	
+                this.plugin.logTiming("/sclogin for %s starting", sender.getName());
+            
                 if(!sender.hasPermission(("can.I.see.this.at.all?")))
                 {
+                    this.plugin.logTiming("/sclogin for %s end invis", sender.getName());
                     sender.sendMessage("Unknown command. Type \"help\" for help.");
                     return true;
                 }
                 if(args.length == 0)
                 {
+                    this.plugin.logTiming("/sclogin for %s end description", sender.getName());
                     sender.sendMessage(this.description);
                     return true;
                 }
@@ -44,15 +48,19 @@ public class SCLoginCommand extends SCLoginMasterCommand
                 
                 if(args.length < 2 || ((sub == Subcommand.CHANGEPW || sub ==  Subcommand.COUNT) && args.length < 3))
                 {
+                    this.plugin.logTiming("/sclogin for %s end invalid args", sender.getName());
                     sender.sendMessage("Invalid arguments!");
                     return true;
                 }
                 
                 if(!sender.hasPermission(sub.getPermission()))
                 {
+                    this.plugin.logTiming("/sclogin for %s end invalid perms", sender.getName());
                     sender.sendMessage(ChatColor.RED+"Insufficient permissions!");
                     return true;
                 }
+                
+                this.plugin.logTiming("/sclogin for %s start async", sender.getName());
                 
 		new BukkitRunnable(){
 
@@ -104,10 +112,12 @@ public class SCLoginCommand extends SCLoginMasterCommand
                                     sender.sendMessage(ChatColor.RED+"invalid command. Use /sclogin for a full list of commands");
                                     break;
                             }
+                            SCLoginCommand.this.plugin.logTiming("/register for %s ending async", sender.getName());
 			}
 			
 		}.runTaskAsynchronously(this.plugin);
-		return false;
+                this.plugin.logTiming("/sclogin for %s ending command, please continue", sender.getName());
+		return true;
 	}
         
         private enum Subcommand

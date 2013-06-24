@@ -60,7 +60,7 @@ public class PlayerManager
                 this.email = this.plugin.getConnection().prepare("SELECT `email` FROM `players` WHERE `username` = ?");
                 this.unregister = this.plugin.getConnection().prepare("DELETE FROM `players` WHERE `username` = ?");
                 this.isLocked = this.plugin.getConnection().prepare("SELECT locked FROM `players` WHERE `username` = ?");
-                this.setLock = this.plugin.getConnection().prepare("UPDATE locked FROM `players` SET `locked` = ? WHERE `username` = ?");
+                this.setLock = this.plugin.getConnection().prepare("UPDATE `players` SET `locked` = ? WHERE `username` = ?");
                 this.getActiveCount = this.plugin.getConnection().prepare("SELECT COUNT(*) as count FROM `players` WHERE `locked` > 0");
                 this.getLockedCount = this.plugin.getConnection().prepare("SELECT COUNT(*) as count FROM `players` WHERE `locked` = 0");
 	}

@@ -9,7 +9,6 @@ import org.sensationcraft.login.SCLogin;
  */
 public class SCLoginAPI 
 {
-    
     /**
      * Private getter for the SCLogin instance
      */
@@ -40,7 +39,7 @@ public class SCLoginAPI
      * @param name - name of the Player
      * @return true if authenticated with /login, false otherwise
      */
-    public static boolean inAuthenticated(String name)
+    public static boolean isAuthenticated(String name)
     {
         return getPlugin().getPlayerManager().isLoggedIn(name);
     }

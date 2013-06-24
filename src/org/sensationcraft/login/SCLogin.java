@@ -1,10 +1,20 @@
 package org.sensationcraft.login;
 
+import java.io.BufferedOutputStream;
 import org.sensationcraft.login.listeners.AuthenticationListener;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -45,27 +55,87 @@ public class SCLogin extends JavaPlugin{
         
         private static SCLogin instance;
         
+        private Logger log;
+        
+        public static boolean timings = true;
+        
 	@Override
 	public void onEnable()
         {
                 instance = this;
-            
+                
+                if(timings)
+                {
+                    File logFile = new File(getDataFolder(), "timings.log");
+                    if(!logFile.exists())
+                    {
+                        try
+                        {
+                            logFile.getParentFile().mkdirs();
+                            if(!logFile.createNewFile())
+                            {
+                                throw new IOException("Failed to create log file");
+                            }
+                        }
+                        catch(IOException ex)
+                        {
+                            logFile = null;
+                        }
+                    }
+
+                    if(logFile != null)
+                    {
+                        this.log = Logger.getLogger("SCLogin_timings");
+                        for(Handler h : this.log.getHandlers())
+                            this.log.removeHandler(h);
+                        try
+                        {
+                            FileHandler fh = new FileHandler();
+                            OutputStream out = new FileOutputStream(logFile, true);
+                            Method m = java.util.logging.StreamHandler.class.getDeclaredMethod("setOutputStream", OutputStream.class);
+                            if(!m.isAccessible()) m.setAccessible(true);
+                            m.invoke(fh, out);
+                            fh.setFormatter(new Formatter() {
+
+                                @Override
+                                public String format(LogRecord record)
+                                {
+                                    return record.getMessage()+"\n";
+                                }
+                            });
+                            this.log.addHandler(fh);
+                        }
+                        catch(Exception ex)
+                        {
+                            getLogger().warning("Failed to initialize the timings logger");
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+                
 		this.getLogger().info("Registering listeners...");
 		this.getServer().getPluginManager().registerEvents(new AuthenticationListener(this), this);
 		this.getLogger().info("Initializing commands...");
 		this.getDataFolder().mkdirs();
+                logTiming("Initializing database");
 		File db = new File(this.getDataFolder(), "SClogin.db");
 		this.database = new SQLite(this.getLogger(), db);
 		if(!this.initSQL())
 		{
+                    logTiming("Connection failed");
                     getLogger().log(Level.SEVERE, "Could not connect to database!");
                     Bukkit.getPluginManager().disablePlugin(this);
                     return;
 		}
+                logTiming("Connection successful");
+                logTiming("Start hooking");
                 this.hook = new xAuthHook(this);
+                logTiming("Done hooking");
+                logTiming("Start registering managers");
                 this.playermngr = new PlayerManager(this);
 		this.passwordmngr = new PasswordManager(this);
                 this.strikemngr = new StrikeManager(this);
+                logTiming("Done registering managers");
                 Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
                 Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
                 this.initCommandMap();
@@ -179,5 +249,13 @@ public class SCLogin extends JavaPlugin{
                 this.commands.put("quit", quit);
                 this.commands.put("q", quit);
 	}
+        
+        public void logTiming(String log, Object...o)
+        {
+            if(timings && this.log != null)
+            {
+                this.log.log(Level.INFO, "["+System.nanoTime()+"]: "+String.format(log, o));
+            }
+        }
 
 }

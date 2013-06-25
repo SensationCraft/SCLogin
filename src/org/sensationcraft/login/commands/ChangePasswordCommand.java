@@ -52,7 +52,7 @@ public class ChangePasswordCommand extends SCLoginMasterCommand
                 @Override
                 public void run()
                 {
-                    String name = player.getName();
+                    String name = player.getName().toLowerCase();
                     
                     PasswordManager pwmanager = ChangePasswordCommand.this.plugin.getPasswordManager();
                     

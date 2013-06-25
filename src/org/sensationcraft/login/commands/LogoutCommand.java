@@ -37,7 +37,7 @@ public class LogoutCommand extends SCLoginMasterCommand
 			public void run()
 			{
                                 LogoutCommand.this.plugin.logTiming("/logout for %s ending command async", sender.getName());
-                                LogoutCommand.this.manager.quit(sender.getName());
+                                LogoutCommand.this.manager.quit(sender.getName().toLowerCase());
                                 sender.sendMessage(ChatColor.GREEN+"You are no longer logged in.");
 			}
 		}.runTaskAsynchronously(this.plugin);

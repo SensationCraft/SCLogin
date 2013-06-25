@@ -84,7 +84,7 @@ public class StrikeManager
     {
         Map<String, Integer> strikePoints = highPriority ? this.highPriority : this.lowPriority;
         
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
         if(!strikePoints.containsKey(name))
         {
             strikePoints.put(name, points);

@@ -47,7 +47,7 @@ public class UnregisterCommand extends SCLoginMasterCommand{
                         {
                             try
                             {
-				if(UnregisterCommand.this.manager.unregister(sender.getName()))
+				if(UnregisterCommand.this.manager.unregister(sender.getName().toLowerCase()))
                                 {
 					sender.sendMessage(ChatColor.GREEN+"Account unregistered. Use /register to register the account.");
 				}

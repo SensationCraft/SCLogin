@@ -47,16 +47,16 @@ public class LoginCommand extends SCLoginMasterCommand
 			@Override
 			public void run()
 			{
-				if(!LoginCommand.this.manager.isRegistered(sender.getName()))
+				if(!LoginCommand.this.manager.isRegistered(sender.getName().toLowerCase()))
 				{
                                         LoginCommand.this.plugin.logTiming("/login for %s ending async, already registered", sender.getName());
 					sender.sendMessage(ChatColor.RED+"That account is not registered. Use /register <password> <confirm password> to register");
 					return;
 				}
-				if(LoginCommand.this.plugin.getPasswordManager().checkPassword(sender.getName(), args[0], ip))
+				if(LoginCommand.this.plugin.getPasswordManager().checkPassword(sender.getName().toLowerCase(), args[0], ip))
                                 {
-					LoginCommand.this.plugin.getPlayerManager().doLogin(sender.getName());
-                                        LoginCommand.this.plugin.getStrikeManager().resetStrikePoints(sender.getName(), true);
+					LoginCommand.this.plugin.getPlayerManager().doLogin(sender.getName().toLowerCase());
+                                        LoginCommand.this.plugin.getStrikeManager().resetStrikePoints(sender.getName().toLowerCase(), true);
 				}
                                 else
                                 {

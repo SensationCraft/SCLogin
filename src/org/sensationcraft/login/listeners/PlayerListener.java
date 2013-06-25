@@ -36,7 +36,7 @@ public class PlayerListener implements Listener
         {
             event.setTo(event.getFrom());
             //event.setCancelled(true);
-            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 1, false);
+            //plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 1, false);
         }
     }
     

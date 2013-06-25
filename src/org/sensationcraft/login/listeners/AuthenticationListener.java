@@ -66,14 +66,14 @@ public class AuthenticationListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerLogin(AsyncPlayerPreLoginEvent e)
 	{
-		String name = e.getName();
+		String name = e.getName().toLowerCase();
                 Bukkit.broadcastMessage(String.format("Yes, %s joined", name));
 		if(!name.matches("[a-zA-Z0-9_]*"))
 		{
 			e.disallow(Result.KICK_OTHER, "Your username contains illegal characters.");
 			return;
 		}
-		if(this.plugin.getPlayerManager().isOnline(e.getName()))
+		if(this.plugin.getPlayerManager().isOnline(name))
 		{
 			e.disallow(Result.KICK_OTHER, "You are already online!");
 			return;
@@ -114,7 +114,7 @@ public class AuthenticationListener implements Listener{
 			@Override
 			public void run()
 			{
-				if(AuthenticationListener.this.plugin.getPlayerManager().isRegistered(player.getName()))
+				if(AuthenticationListener.this.plugin.getPlayerManager().isRegistered(player.getName().toLowerCase()))
 				{
 					player.sendMessage(ChatColor.RED+"Welcome back to SensationCraft. Please login using /login <password>");
 				}
@@ -131,13 +131,13 @@ public class AuthenticationListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent e)
 	{
-		this.plugin.getPlayerManager().quit(e.getPlayer().getName());
+		this.plugin.getPlayerManager().quit(e.getPlayer().getName().toLowerCase());
 	}
         
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onKick(PlayerKickEvent event)
         {
-            String name = event.getPlayer().getName();
+            String name = event.getPlayer().getName().toLowerCase();
             PlayerManager pm = this.plugin.getPlayerManager();
             if(event.getReason().startsWith("Kicked for flying") && pm.isOnline(name) && !pm.isLoggedIn(name))
                 event.setCancelled(true);

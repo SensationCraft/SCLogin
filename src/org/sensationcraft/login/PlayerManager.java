@@ -148,7 +148,7 @@ public class PlayerManager
 	{
 		synchronized(this.statusLock)
 		{
-			return this.playerStatus.get(name) == Status.AUTHENTICATED;
+			return this.playerStatus.get(name.toLowerCase()) == Status.AUTHENTICATED;
 		}
 	}
 
@@ -156,7 +156,7 @@ public class PlayerManager
 	{
 		synchronized(this.statusLock)
 		{
-			return this.playerStatus.get(name) != null;
+			return this.playerStatus.get(name.toLowerCase()) != null;
 		}
 	}
 
@@ -164,7 +164,7 @@ public class PlayerManager
 	{
 		synchronized(this.statusLock)
 		{
-			this.playerStatus.put(name, Status.NOT_LOGGED_IN);
+			this.playerStatus.put(name.toLowerCase(), Status.NOT_LOGGED_IN);
 		}
 	}
 
@@ -172,7 +172,7 @@ public class PlayerManager
 	{
 		synchronized(this.statusLock)
 		{
-			this.playerStatus.remove(name);
+			this.playerStatus.remove(name.toLowerCase());
 		}
 	}
 	public void doLogin(String name)

@@ -23,7 +23,7 @@ public class InventoryListener implements Listener
     {
         if(event.getWhoClicked() instanceof Player == false) return;
         Player player = (Player) event.getWhoClicked();
-        if(this.plugin.getPlayerManager().isLoggedIn(player.getName())) return;
+        if(this.plugin.getPlayerManager().isLoggedIn(player.getName().toLowerCase())) return;
         
         event.setCancelled(true);
         event.setResult(Event.Result.DENY);

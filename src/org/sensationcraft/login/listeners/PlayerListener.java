@@ -120,7 +120,7 @@ public class PlayerListener implements Listener
         }
     }
     
-    @EventHandler(priority = EventPriority.LOWEST)
+    /*@EventHandler(priority = EventPriority.LOWEST)
     public void onDamageItem(org.bukkit.event.player.PlayerItemDamageEvent event)
     {
         Player player = (Player) event.getPlayer();
@@ -129,7 +129,7 @@ public class PlayerListener implements Listener
             event.setCancelled(true);
             plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
         }
-    }
+    }*/
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDrop(org.bukkit.event.player.PlayerDropItemEvent event)

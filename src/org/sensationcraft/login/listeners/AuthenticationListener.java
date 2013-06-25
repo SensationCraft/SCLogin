@@ -36,7 +36,13 @@ public class AuthenticationListener implements Listener{
             final String name = event.getPlayer().getName();
             final InetAddress address = event.getAddress();
             final Player player = event.getPlayer();
-            this.plugin.logTiming("Joining, starting async", name);
+            
+            if(this.plugin.getPlayerManager().isOnline(name))
+            {
+                    event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "You are already online!");
+                    return;
+            }
+            
             new BukkitRunnable()
             {
                 @Override
@@ -57,17 +63,19 @@ public class AuthenticationListener implements Listener{
                             }
                         }.runTask(AuthenticationListener.this.plugin);      
                     }
-                    AuthenticationListener.this.plugin.logTiming("Joining, ending async", name);
                 }
             }.runTaskAsynchronously(plugin);
-            this.plugin.logTiming("Joining, ending sync");
         }
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerLogin(AsyncPlayerPreLoginEvent e)
 	{
 		String name = e.getName().toLowerCase();
-                Bukkit.broadcastMessage(String.format("Yes, %s joined", name));
+                if(name.trim().length() < 3)
+                {
+                    e.disallow(Result.KICK_OTHER, "Your name has to have at least three characters");
+                    return;
+                }
 		if(!name.matches("[a-zA-Z0-9_]*"))
 		{
 			e.disallow(Result.KICK_OTHER, "Your username contains illegal characters.");

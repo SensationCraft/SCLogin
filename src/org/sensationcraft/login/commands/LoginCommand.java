@@ -23,24 +23,19 @@ public class LoginCommand extends SCLoginMasterCommand
 	@Override
 	public boolean execute(final CommandSender sender, final String[] args)
         {
-                this.plugin.logTiming("/login for %s", sender.getName());
 		if(sender instanceof Player == false)
 		{
-                        this.plugin.logTiming("/login for %s end", sender.getName());
 			sender.sendMessage("This command can only be used by players");
 			return true;
 		}
 
 		if(args.length != 1)
 		{
-                        this.plugin.logTiming("/login for %s end", sender.getName());
 			sender.sendMessage(ChatColor.RED+"Correct usage: /login <password>");
 			return true;
 		}
                 
                 final String ip = ((Player)sender).getAddress().getAddress().getHostAddress();
-
-                this.plugin.logTiming("/login for %s, start asyncing", sender.getName());
                 
 		new BukkitRunnable()
 		{
@@ -49,7 +44,6 @@ public class LoginCommand extends SCLoginMasterCommand
 			{
 				if(!LoginCommand.this.manager.isRegistered(sender.getName().toLowerCase()))
 				{
-                                        LoginCommand.this.plugin.logTiming("/login for %s ending async, already registered", sender.getName());
 					sender.sendMessage(ChatColor.RED+"That account is not registered. Use /register <password> <confirm password> to register");
 					return;
 				}
@@ -63,10 +57,8 @@ public class LoginCommand extends SCLoginMasterCommand
                                     sender.sendMessage(ChatColor.RED+"Incorrect password!");
                                     plugin.getStrikeManager().addStrikePoints((Player)sender, 34, true);
                                 }
-                                LoginCommand.this.plugin.logTiming("/login for %s ending command async", sender.getName());
 			}
 		}.runTaskAsynchronously(this.plugin);
-                this.plugin.logTiming("/login for %s ending command, please continue", sender.getName());
 		return true;
 
 	}

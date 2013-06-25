@@ -117,25 +117,18 @@ public class SCLogin extends JavaPlugin{
 		this.getServer().getPluginManager().registerEvents(new AuthenticationListener(this), this);
 		this.getLogger().info("Initializing commands...");
 		this.getDataFolder().mkdirs();
-                logTiming("Initializing database");
 		File db = new File(this.getDataFolder(), "SClogin.db");
 		this.database = new SQLite(this.getLogger(), db);
 		if(!this.initSQL())
 		{
-                    logTiming("Connection failed");
                     getLogger().log(Level.SEVERE, "Could not connect to database!");
                     Bukkit.getPluginManager().disablePlugin(this);
                     return;
 		}
-                logTiming("Connection successful");
-                logTiming("Start hooking");
                 this.hook = new xAuthHook(this);
-                logTiming("Done hooking");
-                logTiming("Start registering managers");
                 this.playermngr = new PlayerManager(this);
 		this.passwordmngr = new PasswordManager(this);
                 this.strikemngr = new StrikeManager(this);
-                logTiming("Done registering managers");
                 Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
                 Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
                 this.initCommandMap();
@@ -249,13 +242,5 @@ public class SCLogin extends JavaPlugin{
                 this.commands.put("quit", quit);
                 this.commands.put("q", quit);
 	}
-        
-        public void logTiming(String log, Object...o)
-        {
-            if(timings && this.log != null)
-            {
-                this.log.log(Level.INFO, "["+System.nanoTime()+"]: "+String.format(log, o));
-            }
-        }
 
 }

@@ -70,7 +70,7 @@ public class xAuthHook
 
         if (olddb.isReady())
         {
-            this.getdata = olddb.prepare("SELECT `id`,`password`, `pwtype` FROM `accounts` WHERE `playername` = ?");
+            this.getdata = olddb.prepare("SELECT `id`,`password`, `pwtype` FROM `accounts` WHERE LOWER(`playername`) = LOWER(?)");
             this.delid = olddb.prepare("DELETE FROM `accounts` WHERE id = ?");
             plugin.getLogger().log(Level.INFO, "Hooked into the old xAuth database.");
         }

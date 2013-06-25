@@ -90,6 +90,7 @@ public class H2 extends Database
 		}
 		catch(ClassNotFoundException ex)
 		{
+                        ex.printStackTrace();
 			this.log("H2 library not found!");
 			return false;
 		}

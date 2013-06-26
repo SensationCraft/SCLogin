@@ -53,25 +53,36 @@ public class PasswordManager
         // New check
         if(this.getpass != null)
         {
-            ResultSet result = null;
-            try
+            int i = 0;
+            while(i++ < 3)
             {
-                result = Database.synchronizedExecuteQuery(getpass, getpassLock, player);
-                if(result == null || !result.next()) return false;
-                return checkPass.equals(result.getString("password"));
-            }
-            catch(SQLException ex)
-            {
-                // Log it maybe?
-            }
-            finally
-            {
-                if(result != null)
+                ResultSet result = null;
+                try
                 {
+                    result = Database.synchronizedExecuteQuery(getpass, getpassLock, player);
+                    if(result == null || !result.next()) return false;
                     try
                     {
-                        result.close();
-                    }catch(SQLException ex){}
+                        return checkPass.equals(result.getString("password"));
+                    }
+                    catch(NullPointerException ex)
+                    {
+
+                    }
+                }
+                catch(SQLException ex)
+                {
+                    // Log it maybe?
+                }
+                finally
+                {
+                    if(result != null)
+                    {
+                        try
+                        {
+                            result.close();
+                        }catch(SQLException ex){}
+                    }
                 }
             }
         }

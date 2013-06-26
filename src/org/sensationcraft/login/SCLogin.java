@@ -64,55 +64,6 @@ public class SCLogin extends JavaPlugin{
         {
                 instance = this;
                 
-                if(timings)
-                {
-                    File logFile = new File(getDataFolder(), "timings.log");
-                    if(!logFile.exists())
-                    {
-                        try
-                        {
-                            logFile.getParentFile().mkdirs();
-                            if(!logFile.createNewFile())
-                            {
-                                throw new IOException("Failed to create log file");
-                            }
-                        }
-                        catch(IOException ex)
-                        {
-                            logFile = null;
-                        }
-                    }
-
-                    if(logFile != null)
-                    {
-                        this.log = Logger.getLogger("SCLogin_timings");
-                        for(Handler h : this.log.getHandlers())
-                            this.log.removeHandler(h);
-                        try
-                        {
-                            FileHandler fh = new FileHandler();
-                            OutputStream out = new FileOutputStream(logFile, true);
-                            Method m = java.util.logging.StreamHandler.class.getDeclaredMethod("setOutputStream", OutputStream.class);
-                            if(!m.isAccessible()) m.setAccessible(true);
-                            m.invoke(fh, out);
-                            fh.setFormatter(new Formatter() {
-
-                                @Override
-                                public String format(LogRecord record)
-                                {
-                                    return record.getMessage()+"\n";
-                                }
-                            });
-                            this.log.addHandler(fh);
-                        }
-                        catch(Exception ex)
-                        {
-                            getLogger().warning("Failed to initialize the timings logger");
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-                
 		this.getLogger().info("Registering listeners...");
 		this.getServer().getPluginManager().registerEvents(new AuthenticationListener(this), this);
 		this.getLogger().info("Initializing commands...");

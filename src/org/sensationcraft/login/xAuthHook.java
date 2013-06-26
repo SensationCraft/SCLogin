@@ -119,7 +119,6 @@ public class xAuthHook
         }
         catch (SQLException ex)
         {
-            System.out.println("Nothing found, please continue");
             return;
         }
         finally

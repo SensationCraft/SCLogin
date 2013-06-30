@@ -6,9 +6,12 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.IllegalFormatException;
 import java.util.Map;
+import org.bukkit.Bukkit;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.sensationcraft.login.sql.Database;
 
 public class PlayerManager
@@ -56,11 +59,11 @@ public class PlayerManager
 		this.plugin = plugin;
 		this.registered = this.plugin.getConnection().prepare("SELECT * FROM `players` WHERE `username` = ?");
 		this.ip = this.plugin.getConnection().prepare("SELECT `lastip` FROM `players` WHERE `username` = ?");
-		this.register = this.plugin.getConnection().prepare("INSERT INTO `players`(`username`, `password`, `lastip`, `email`, `locked`) VALUES(?, ?, ?, ?, ?)");
+		this.register = this.plugin.getConnection().prepare("INSERT INTO `players`(`username`, `password`, `lastip`, `email`, `locked`) VALUES(LOWER(?), ?, ?, ?, ?)");
                 this.email = this.plugin.getConnection().prepare("SELECT `email` FROM `players` WHERE `username` = ?");
                 this.unregister = this.plugin.getConnection().prepare("DELETE FROM `players` WHERE `username` = ?");
-                this.isLocked = this.plugin.getConnection().prepare("SELECT locked FROM `players` WHERE `username` = ?");
-                this.setLock = this.plugin.getConnection().prepare("UPDATE `players` SET `locked` = ? WHERE `username` = ?");
+                this.isLocked = this.plugin.getConnection().prepare("SELECT locked FROM `players` WHERE LOWER(`username`) = LOWER(?)");
+                this.setLock = this.plugin.getConnection().prepare("UPDATE `players` SET `locked` = ? WHERE LOWER(`username`) = LOWER(?)");
                 this.getActiveCount = this.plugin.getConnection().prepare("SELECT COUNT(*) as count FROM `players` WHERE `locked` > 0");
                 this.getLockedCount = this.plugin.getConnection().prepare("SELECT COUNT(*) as count FROM `players` WHERE `locked` = 0");
 	}
@@ -177,17 +180,29 @@ public class PlayerManager
 	}
 	public void doLogin(String name)
         {
+                final Player player = this.plugin.getServer().getPlayerExact(name);
+                if(player == null)
+                {
+                        this.quit(name);
+                        return;
+                }
 		synchronized(this.statusLock)
                 {
 			this.playerStatus.put(name, Status.AUTHENTICATED);
-			Player player = this.plugin.getServer().getPlayerExact(name);
-			if(player == null)
-                        {
-				this.quit(name);
-				return;
-			}
-			player.sendMessage(ChatColor.GREEN+"You have been logged in!");
 		}
+                player.removePotionEffect(PotionEffectType.BLINDNESS);
+                player.sendMessage(ChatColor.GREEN+"You have been logged in!");
+                new BukkitRunnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        for(Player other : Bukkit.getOnlinePlayers())
+                        {
+                            if(!other.canSee(player) && isLoggedIn(other.getName().toLowerCase())) other.showPlayer(player);
+                        }
+                    }
+                }.runTask(this.plugin);    
 	}
         
 	public boolean register(String name, String pass, String ip) throws Exception
@@ -224,6 +239,7 @@ public class PlayerManager
             }
             catch(SQLException ex)
             {
+                ex.printStackTrace();
                 // Swallow the exception
             }
             return false;

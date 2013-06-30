@@ -1,5 +1,6 @@
 package org.sensationcraft.login.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -156,6 +157,7 @@ public class PlayerListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommand(org.bukkit.event.player.PlayerCommandPreprocessEvent event)
     {
+        Bukkit.broadcastMessage(event.getMessage());
         Player player = (Player) event.getPlayer();
         if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
         {

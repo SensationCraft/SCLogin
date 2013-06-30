@@ -21,8 +21,7 @@ public class xAuthHook
     private final Object getdataLock = new Object();
     
     private PreparedStatement delid;
-    private final Object delid_lock = new Object();
-    
+    private final Object delidLock = new Object();
     
     protected xAuthHook(SCLogin plugin)
     {
@@ -70,7 +69,7 @@ public class xAuthHook
 
         if (olddb.isReady())
         {
-            this.getdata = olddb.prepare("SELECT `id`,`password`, `pwtype` FROM `accounts` WHERE LOWER(`playername`) = LOWER(?)");
+            this.getdata = olddb.prepare("SELECT `id`,`password`, `pwtype`, `active` FROM `accounts` WHERE LOWER(`playername`) = LOWER(?)");
             this.delid = olddb.prepare("DELETE FROM `accounts` WHERE id = ?");
             plugin.getLogger().log(Level.INFO, "Hooked into the old xAuth database.");
         }
@@ -99,13 +98,14 @@ public class xAuthHook
             this.olddb.close();        
     }
     
-    public void checkPassword_old(PasswordManager.PlayerCheck reference, String checkPass)
+    public void checkPassword(PasswordManager.PlayerCheck reference, String checkPass)
     {
         String player = reference.getName();
         String realPass = "";
         PasswordType type = PasswordType.DEFAULT;
         ResultSet result = null;
         int id = Integer.MIN_VALUE;
+        boolean locked = false;
         try
         {
             result = Database.synchronizedExecuteQuery(getdata, getdataLock, player);
@@ -116,6 +116,7 @@ public class xAuthHook
             id = result.getInt("id");
             realPass = result.getString("password");
             type = PasswordType.getType(result.getInt("pwtype"));
+            locked = result.getInt("active") == 0;
         }
         catch (SQLException ex)
         {
@@ -155,14 +156,13 @@ public class xAuthHook
         {
             checkPassHash = PasswordHandler.hash(checkPass, type.getAlgorithm());
         }
-
-        this.plugin.getLogger().log(Level.INFO, "{0}:{1}",new Object[]{checkPassHash, realPass});
         
         if (checkPassHash.equals(realPass))
         {
             reference.authenticate();
+            if(locked) reference.lock();
             // update hash in database to use xAuth's hashing method
-            Database.synchronizedExecuteUpdate(delid, delid_lock, id);
+            Database.synchronizedExecuteUpdate(delid, delidLock, id);
         }
     }
     
@@ -175,7 +175,7 @@ public class xAuthHook
         }
         catch(SQLException ex)
         {
-            
+            // Swallow the exception
         }
         return false;
     }

@@ -34,7 +34,7 @@ public class StrikeManager
     
     private final int MAX_POINTS = 100;
         
-    private final int TEMP_LOCKOUT = 1000*3600;
+    private final int TEMP_LOCKOUT = 1000*60*10;
     
     private final String timeout;
     
@@ -66,21 +66,23 @@ public class StrikeManager
         }
         if(h > 0)
         {
-            to.append(" ").append(w).append(" hours");
+            to.append(" ").append(h).append(" hours");
         }
         if(m > 0)
         {
-            to.append(" ").append(w).append(" minutes");
+            to.append(" ").append(m).append(" minutes");
         }
         if(s > 0)
         {
-            to.append(" ").append(w).append(" seconds");
+            to.append(" ").append(s).append(" seconds");
         }
         
         this.timeout = to.toString();
+        
+        System.out.println("Timeout set to: "+timeout);
     }
     
-    public void addStrikePoints(Player player, int points, boolean highPriority)
+    public void addStrikePoints(final Player player, int points, boolean highPriority)
     {
         Map<String, Integer> strikePoints = highPriority ? this.highPriority : this.lowPriority;
         
@@ -102,11 +104,27 @@ public class StrikeManager
             {
                 Database.synchronizedExecuteUpdate(lockip, lockipLock, new java.sql.Timestamp(System.currentTimeMillis()+TEMP_LOCKOUT), ip);
                 
-                player.kickPlayer(String.format("Your ip has been banned for %s", this.timeout));
+                new BukkitRunnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        player.kickPlayer(String.format("Your ip has been banned for %s", timeout));
+                    }
+                }.runTask(plugin);
+                
             }
             else
             {
-                player.kickPlayer("You are required to log in first!");
+                /*new BukkitRunnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        player.kickPlayer("You are required to log in first!");
+                    }
+                }.runTask(plugin);*/
+                
             }
         }
     }

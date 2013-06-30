@@ -37,25 +37,39 @@ public class LoginCommand extends SCLoginMasterCommand
                 
                 final String ip = ((Player)sender).getAddress().getAddress().getHostAddress();
                 
+                final String name = sender.getName().toLowerCase();
+                
 		new BukkitRunnable()
 		{
 			@Override
 			public void run()
 			{
-				if(!LoginCommand.this.manager.isRegistered(sender.getName().toLowerCase()))
+				if(!LoginCommand.this.manager.isRegistered(name))
 				{
-					sender.sendMessage(ChatColor.RED+"That account is not registered. Use /register <password> <confirm password> to register");
+					sender.sendMessage(ChatColor.RED+"That account is not registered. Use /register <password> <confirm password> to register.");
 					return;
 				}
-				if(LoginCommand.this.plugin.getPasswordManager().checkPassword(sender.getName().toLowerCase(), args[0], ip))
+                                if(LoginCommand.this.manager.isLocked(name))
                                 {
-					LoginCommand.this.plugin.getPlayerManager().doLogin(sender.getName().toLowerCase());
-                                        LoginCommand.this.plugin.getStrikeManager().resetStrikePoints(sender.getName().toLowerCase(), true);
+                                        sender.sendMessage(ChatColor.RED+"That account is locked by an administrator.");
+                                        return;
+                                }
+				if(LoginCommand.this.plugin.getPasswordManager().checkPassword(name, args[0], ip))
+                                {
+					LoginCommand.this.plugin.getPlayerManager().doLogin(name);
+                                        LoginCommand.this.plugin.getStrikeManager().resetStrikePoints(name, true);
 				}
                                 else
                                 {
-                                    sender.sendMessage(ChatColor.RED+"Incorrect password!");
-                                    plugin.getStrikeManager().addStrikePoints((Player)sender, 34, true);
+                                    if(LoginCommand.this.plugin.getPlayerManager().isLocked(name))
+                                    {
+                                        sender.sendMessage(ChatColor.RED+"That account is locked by an administrator.");
+                                    }
+                                    else
+                                    {
+                                        sender.sendMessage(ChatColor.RED+"Incorrect password!");
+                                        plugin.getStrikeManager().addStrikePoints((Player)sender, 34, true);
+                                    }
                                 }
 			}
 		}.runTaskAsynchronously(this.plugin);

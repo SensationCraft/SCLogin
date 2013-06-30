@@ -1,6 +1,13 @@
 package org.sensationcraft.login.listeners;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,17 +20,54 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sensationcraft.login.PlayerManager;
 import org.sensationcraft.login.SCLogin;
+import org.sensationcraft.login.mail.MailManager;
 
 public class AuthenticationListener implements Listener{
 
 	private SCLogin plugin;
+        
+        private final PotionEffect blindness = new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 2);
+        
+        private final Map<String, String> kicked = new HashMap<String, String>();
+        private final Object kickedLock = new Object();
+        
+        private final Set<String> joined = new HashSet<String>();
+        private final Object joinedLock = new Object();
 
 	public AuthenticationListener(SCLogin scLogin)
         {
 		this.plugin = scLogin;
+                new BukkitRunnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        synchronized(kickedLock)
+                        {
+                            Player player;
+                            List<String> rem = new ArrayList<String>();
+                            for(Map.Entry<String, String> kickEntry : kicked.entrySet())
+                            {
+                                String name = kickEntry.getKey();
+                                String reason = kickEntry.getValue();
+                                player = Bukkit.getPlayer(kickEntry.getKey());
+                                if(player == null) continue;
+                                player.kickPlayer(reason != null ? reason : "Something went wrong when logging you in...");
+                                player = null;
+                                rem.add(name);
+                            }
+                            for(String remove : rem)
+                            {
+                                kicked.remove(remove);
+                            }
+                        }
+                    }
+                }.runTaskTimerAsynchronously(plugin, 0L, 20L);
 	}
         
         /**
@@ -35,7 +79,6 @@ public class AuthenticationListener implements Listener{
             if(Bukkit.getOnlineMode()) return;
             final String name = event.getPlayer().getName();
             final InetAddress address = event.getAddress();
-            final Player player = event.getPlayer();
             
             if(this.plugin.getPlayerManager().isOnline(name))
             {
@@ -52,16 +95,10 @@ public class AuthenticationListener implements Listener{
                     Bukkit.getPluginManager().callEvent(event);
                     if(event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED)
                     {
-                        // Not sure if this would be thread-safe
-                        new BukkitRunnable()
+                        synchronized(kickedLock)
                         {
-                            @Override
-                            public void run()
-                            {
-                                System.out.println(String.format("Kicked player %s for %s", player.getName(), event.getKickMessage()));
-                                player.kickPlayer(event.getKickMessage());
-                            }
-                        }.runTask(AuthenticationListener.this.plugin);      
+                            kicked.put(name, event.getKickMessage());
+                        }
                     }
                 }
             }.runTaskAsynchronously(plugin);
@@ -104,7 +141,7 @@ public class AuthenticationListener implements Listener{
 				}
 				else
 				{
-					//sendEmail();
+					MailManager.sendMail(name);
 					e.disallow(Result.KICK_OTHER, "Your ip does not match with the last ip you authenticated with. We sent an email to your inbox with a code to verify this is indeed you.");
 				}
                                 return;
@@ -115,8 +152,9 @@ public class AuthenticationListener implements Listener{
         
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent e)
-	{
+	{ 
 		final Player player = e.getPlayer();
+                player.addPotionEffect(this.blindness);
                 new BukkitRunnable()
 		{
 			@Override
@@ -134,6 +172,12 @@ public class AuthenticationListener implements Listener{
 				// a synchronized list for the chat packets
 			}
 		}.runTaskLaterAsynchronously(this.plugin, 1L);
+                for(Player other : Bukkit.getOnlinePlayers())
+                {
+                    if(other.canSee(player)) other.hidePlayer(player);
+                    if(player.canSee(other) && !this.plugin.getPlayerManager().isLoggedIn(other.getName()))
+                        player.hidePlayer(other);
+                }
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)

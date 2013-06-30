@@ -22,8 +22,7 @@ public class SCLoginCommand extends SCLoginMasterCommand
                 StringBuilder desc = new StringBuilder("----- SCLogin -----");
                 for(Subcommand sc : Subcommand.values())
                 {
-                    desc.append("/sclogin");
-                    if(!sc.getCommand().isEmpty()) desc.append(sc.getCommand()).append(" ");
+                    desc.append("/sclogin ").append(sc.getCommand());
                     desc.append(" - ").append(sc.getDescription()).append("\n");
                 }
                 desc.append("-------------------");
@@ -47,7 +46,7 @@ public class SCLoginCommand extends SCLoginMasterCommand
             
                 final Subcommand sub = Subcommand.getSubcommand(args[0]);
                 
-                if(args.length < 2 || ((sub == Subcommand.CHANGEPW || sub ==  Subcommand.COUNT) && args.length < 3))
+                if(args.length < 2 || ((sub == Subcommand.CHANGEPW && args.length < 4) || (sub ==  Subcommand.COUNT && args.length < 3)))
                 {
                     sender.sendMessage("Invalid arguments!");
                     return true;
@@ -55,19 +54,20 @@ public class SCLoginCommand extends SCLoginMasterCommand
                 
                 if(sub == Subcommand.CHANGEPW)
                 {
-                    if(!args[1].equals(args[2]))
+                    args[1] = args[1].toLowerCase();
+                    if(!args[2].equals(args[3]))
                     {
                         sender.sendMessage(ChatColor.RED+"Your entered password and the confirmation password don't seem to match.");
                         return true;
                     }
 
-                    if(args[0].length() < 6)
+                    if(args[2].length() < 6)
                     {
                             sender.sendMessage(ChatColor.RED+"Your entered password is too short. At least 6 characters are required.");
                             return true;
                     }
 
-                    if(this.forbidden.contains(args[0].toLowerCase()))
+                    if(this.forbidden.contains(args[2].toLowerCase()))
                     {
                             sender.sendMessage(ChatColor.RED+"Please pick another password.");
                             return true;
@@ -99,6 +99,7 @@ public class SCLoginCommand extends SCLoginMasterCommand
                                     }
                                     SCLoginCommand.this.plugin.getPlayerManager().setLocked(args[1], true);
                                     sender.sendMessage(ChatColor.GREEN+String.format("Account '%s' is now locked", args[1]));
+                                    SCLoginCommand.this.plugin.getPlayerManager().quit(args[1]);
                                     break;
                                 case UNLOCK:
                                     if(!SCLoginCommand.this.plugin.getPlayerManager().isLocked(args[1]))

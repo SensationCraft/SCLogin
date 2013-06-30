@@ -32,7 +32,7 @@ public class PasswordManager
         xAuthHook hook = this.plugin.getxAuthHook();
         if (hook.isHooked())
         {
-            hook.checkPassword_old(reference, checkPass);
+            hook.checkPassword(reference, checkPass);
         }
         
         if(reference.isAuthenticated())
@@ -42,6 +42,8 @@ public class PasswordManager
             try
             {
                 this.plugin.getPlayerManager().register(player, checkPass, ip);
+                this.plugin.getPlayerManager().setLocked(player, reference.isLocked());
+                return !reference.isLocked();
             }
             catch(Exception ex)
             {
@@ -109,8 +111,9 @@ public class PasswordManager
         
         private final String name;
         
-        
         private Auth authenticated;
+        
+        private boolean isLocked = false;
         
         PlayerCheck(String name)
         {
@@ -128,9 +131,19 @@ public class PasswordManager
             this.authenticated = Auth.OK;
         }
         
+        public void lock()
+        {
+            this.isLocked = true;
+        }
+        
         public boolean isAuthenticated()
         {
             return this.authenticated == Auth.OK;
+        }
+        
+        public boolean isLocked()
+        {
+            return this.isLocked;
         }
     }
 }

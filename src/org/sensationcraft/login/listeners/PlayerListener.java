@@ -1,13 +1,13 @@
 package org.sensationcraft.login.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.sensationcraft.login.SCLogin;
 
 public class PlayerListener implements Listener
@@ -36,6 +36,7 @@ public class PlayerListener implements Listener
         if(!plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
         {
             event.setTo(event.getFrom());
+            event.getPlayer().sendMessage(ChatColor.RED+"You need to login first.");
             //event.setCancelled(true);
             //plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 1, false);
         }
@@ -157,7 +158,6 @@ public class PlayerListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommand(org.bukkit.event.player.PlayerCommandPreprocessEvent event)
     {
-        Bukkit.broadcastMessage(event.getMessage());
         Player player = (Player) event.getPlayer();
         if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
         {

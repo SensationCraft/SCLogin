@@ -8,87 +8,87 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sensationcraft.login.PlayerManager;
 import org.sensationcraft.login.SCLogin;
+import org.sensationcraft.login.messages.Messages;
 
-public class RegisterCommand extends SCLoginMasterCommand{
+public class RegisterCommand extends SCLoginMasterCommand
+{
 
-	private SCLogin plugin;
-	private PlayerManager manager;
-        
-        private final Set<String> forbidden = Sets.newHashSet("123456", "password", "<password>");
+    private SCLogin plugin;
+    private PlayerManager manager;
+    private final Set<String> forbidden = Sets.newHashSet("123456", "password", "<password>");
 
-	public RegisterCommand(SCLogin scLogin){
-		this.plugin = scLogin;
-		this.manager = this.plugin.getPlayerManager();
-	}
+    public RegisterCommand(SCLogin scLogin)
+    {
+        super("register");
+        this.plugin = scLogin;
+        this.manager = this.plugin.getPlayerManager();
+    }
 
-	@Override
-	public boolean execute(final CommandSender sender, final String[] args) 
+    @Override
+    public boolean execute(final CommandSender sender, final String[] args)
+    {
+        if (sender instanceof Player == false)
         {
-		if(sender instanceof Player == false)
-		{
-			sender.sendMessage("This command can only be used by players");
-			return true;
-		}
-                
-                int len = sender.getName().length();
-                
-                if(sender.getName().replaceAll("_-\\.\\*!", "").length() != len)
-                {
-                        sender.sendMessage(ChatColor.RED+"Please pick another username.");
-                        return true;
-                }
+            sender.sendMessage("This command can only be used by players");
+            return true;
+        }
 
-		if(args.length != 2)
-		{
-			sender.sendMessage(ChatColor.RED+"Correct usage: /register <password> <confirm password>");
-			return true;
-		}
-                
-                if(!args[0].equals(args[1]))
-                {
-                        sender.sendMessage(ChatColor.RED+"Your entered passwords don't seem to match.");
-                        return true;
-                }
-                
-                if(args[0].length() < 6)
-                {
-                        sender.sendMessage(ChatColor.RED+"Your entered password is too short. At least 6 characters are required.");
-                        return true;
-                }
-                
-                if(this.forbidden.contains(args[0].toLowerCase()))
-                {
-                        sender.sendMessage(ChatColor.RED+"Please pick another password.");
-                        return true;
-                }
-                
-                final String ip = ((Player)sender).getAddress().getAddress().getHostAddress();
-                
-		new BukkitRunnable()
-                {
+        int len = sender.getName().length();
 
-			@Override
-			public void run() 
-                        {
-                            try
-                            {
-				if(RegisterCommand.this.manager.register(sender.getName().toLowerCase(), args[1], ip))
-                                {
-					sender.sendMessage(ChatColor.GREEN+"You are now registered, use /login <password> to login.");
-				}
-                                else
-                                {
-                                        sender.sendMessage(ChatColor.RED+"I'm sorry, you are already registered. You can use '/changepw' to change your password.");
-                                }
-                            }
-                            catch(Exception ex)
-                            {
-                                sender.sendMessage(ChatColor.RED+"An error occurred while attempting to register you. Please contact a member of staff on sensationcraft.info");
-                            }
-                        }
+        if (sender.getName().replaceAll("_-\\.\\*!", "").length() != len)
+        {
+            sender.sendMessage(Messages.USERNAME_BLACKLISTED.getMessage());
+            return true;
+        }
 
-		}.runTaskAsynchronously(this.plugin);
-		return true;
-	}
+        if (args.length != 2)
+        {
+            sender.sendMessage(Messages.INVALID_SYNTAX.getMessage() + this.usage);
+            return true;
+        }
 
+        if (!args[0].equals(args[1]))
+        {
+            sender.sendMessage(Messages.PASSWORDS_DONT_MATCH.getMessage());
+            return true;
+        }
+
+        if (args[0].length() < 6)
+        {
+            sender.sendMessage(Messages.PASSWORD_TOO_SHORT.getMessage());
+            return true;
+        }
+
+        if (this.forbidden.contains(args[0].toLowerCase()))
+        {
+            sender.sendMessage(Messages.PASSWORD_BLACKLISTED.getMessage());
+            return true;
+        }
+
+        final String ip = ((Player) sender).getAddress().getAddress().getHostAddress();
+
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    if (RegisterCommand.this.manager.register(sender.getName().toLowerCase(), args[1], ip))
+                    {
+                        sender.sendMessage(Messages.REGISTER_SUCCESS.getMessage());
+                    }
+                    else
+                    {
+                        sender.sendMessage(Messages.ALREADY_REGISTERED.getMessage());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    sender.sendMessage(ChatColor.RED + "An error occurred while attempting to register you. Please contact a member of staff on sensationcraft.info");
+                }
+            }
+        }.runTaskAsynchronously(this.plugin);
+        return true;
+    }
 }

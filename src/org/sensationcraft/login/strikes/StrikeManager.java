@@ -6,38 +6,29 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sensationcraft.login.SCLogin;
+import org.sensationcraft.login.messages.Messages;
 import org.sensationcraft.login.sql.Database;
 
-public class StrikeManager 
+public class StrikeManager
 {
+
     private SCLogin plugin;
-    
     private PreparedStatement lockip;
-    
     private final Object lockipLock = new Object();
-    
     private PreparedStatement checkip;
-    
     private final Object checkipLock = new Object();
-    
     private PreparedStatement dellock;
-    
     private final Object dellockLock = new Object();
-    
     Map<String, Integer> lowPriority = new HashMap<String, Integer>();
-    
     Map<String, Integer> highPriority = new HashMap<String, Integer>();
-    
     private final int MAX_POINTS = 100;
-        
-    private final int TEMP_LOCKOUT = 1000*60*10;
-    
+    private final int TEMP_LOCKOUT = 1000 * 60 * 10;
     private final String timeout;
-    
+
     public StrikeManager(SCLogin plugin)
     {
         this.plugin = plugin;
@@ -45,49 +36,49 @@ public class StrikeManager
         this.checkip = this.plugin.getConnection().prepare("SELECT `till` FROM `lockouts` WHERE `ip` = ?");
         this.dellock = this.plugin.getConnection().prepare("DELETE FROM `lockouts` WHERE `ip` = ?");
         StringBuilder to = new StringBuilder("Too many illegal activities while not logged in. Your ip has been temporarily locked out for");
-        int y = (int) Math.floor(TEMP_LOCKOUT / (1000*3600*24*365));
-        int w = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y))/(1000*3600*24*7));
-        int d = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w)) / (1000*3600*24));
-        int h = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w) - (1000*3600*24*d)) / (1000*3600));
-        int m = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w) - (1000*3600*24*d) - (1000*3600*h)) / (1000*60));
-        int s = (int) Math.floor((TEMP_LOCKOUT - (1000*3600*24*365*y) - (1000*3600*24*7*w) - (1000*3600*24*d) - (1000*3600*h) - (1000*60*m)) / (1000));
-                
-        if(y > 0) 
+        int y = (int) Math.floor(TEMP_LOCKOUT / (1000 * 3600 * 24 * 365));
+        int w = (int) Math.floor((TEMP_LOCKOUT - (1000 * 3600 * 24 * 365 * y)) / (1000 * 3600 * 24 * 7));
+        int d = (int) Math.floor((TEMP_LOCKOUT - (1000 * 3600 * 24 * 365 * y) - (1000 * 3600 * 24 * 7 * w)) / (1000 * 3600 * 24));
+        int h = (int) Math.floor((TEMP_LOCKOUT - (1000 * 3600 * 24 * 365 * y) - (1000 * 3600 * 24 * 7 * w) - (1000 * 3600 * 24 * d)) / (1000 * 3600));
+        int m = (int) Math.floor((TEMP_LOCKOUT - (1000 * 3600 * 24 * 365 * y) - (1000 * 3600 * 24 * 7 * w) - (1000 * 3600 * 24 * d) - (1000 * 3600 * h)) / (1000 * 60));
+        int s = (int) Math.floor((TEMP_LOCKOUT - (1000 * 3600 * 24 * 365 * y) - (1000 * 3600 * 24 * 7 * w) - (1000 * 3600 * 24 * d) - (1000 * 3600 * h) - (1000 * 60 * m)) / (1000));
+
+        if (y > 0)
         {
             to.append(" ").append(y).append(" years");
         }
-        if(w > 0)
+        if (w > 0)
         {
             to.append(" ").append(w).append(" weeks");
         }
-        if(d > 0)
+        if (d > 0)
         {
             to.append(" ").append(d).append(" days");
         }
-        if(h > 0)
+        if (h > 0)
         {
             to.append(" ").append(h).append(" hours");
         }
-        if(m > 0)
+        if (m > 0)
         {
             to.append(" ").append(m).append(" minutes");
         }
-        if(s > 0)
+        if (s > 0)
         {
             to.append(" ").append(s).append(" seconds");
         }
-        
+
         this.timeout = to.toString();
-        
-        System.out.println("Timeout set to: "+timeout);
+
+        System.out.println("Timeout set to: " + timeout);
     }
-    
+
     public void addStrikePoints(final Player player, int points, boolean highPriority)
     {
         Map<String, Integer> strikePoints = highPriority ? this.highPriority : this.lowPriority;
-        
+
         String name = player.getName().toLowerCase();
-        if(!strikePoints.containsKey(name))
+        if (!strikePoints.containsKey(name))
         {
             strikePoints.put(name, points);
         }
@@ -95,15 +86,16 @@ public class StrikeManager
         {
             strikePoints.put(name, points + strikePoints.get(name));
         }
-        
+
         String ip = player.getAddress().getAddress().getHostAddress();
-        if(strikePoints.get(name) > MAX_POINTS)
+        if (strikePoints.get(name) > MAX_POINTS)
         {
             resetStrikePoints(name, highPriority);
-            if(highPriority)
+            if (highPriority)
             {
-                Database.synchronizedExecuteUpdate(lockip, lockipLock, new java.sql.Timestamp(System.currentTimeMillis()+TEMP_LOCKOUT), ip);
-                
+                System.out.println(System.currentTimeMillis());
+                System.out.println(new Timestamp(System.currentTimeMillis()+TEMP_LOCKOUT).getTime());
+                Database.synchronizedExecuteUpdate(lockip, lockipLock, ip, new java.sql.Timestamp(System.currentTimeMillis() + TEMP_LOCKOUT));
                 new BukkitRunnable()
                 {
                     @Override
@@ -112,38 +104,51 @@ public class StrikeManager
                         player.kickPlayer(String.format("Your ip has been banned for %s", timeout));
                     }
                 }.runTask(plugin);
-                
+
             }
             else
             {
+                // Removed on request of Svesken
                 /*new BukkitRunnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        player.kickPlayer("You are required to log in first!");
-                    }
-                }.runTask(plugin);*/
-                
+                 {
+                 @Override
+                 public void run()
+                 {
+                 player.kickPlayer("You are required to log in first!");
+                 }
+                 }.runTask(plugin);*/
             }
         }
+        else
+        {
+            player.sendMessage(Messages.NOT_LOGGEDIN.getMessage());
+        }
     }
-    
+
     public void resetStrikePoints(String name, boolean highPriority)
     {
-        if(highPriority) this.highPriority.remove(name);
+        if (highPriority)
+        {
+            this.highPriority.remove(name);
+        }
         this.lowPriority.remove(name);
     }
-    
+
     public boolean isIpLockedout(final String ip)
     {
         ResultSet result = Database.synchronizedExecuteQuery(checkip, checkipLock, ip);
         try
         {
-            if(result == null || !result.next()) return false;
-            
-            boolean done = result.getTimestamp("till").before(new Timestamp(System.currentTimeMillis()));
-            if(done)
+            if (result == null || !result.next())
+            {
+                System.out.println("Nothing found.");
+                return false;
+            }
+
+            Timestamp till = result.getTimestamp("till");
+            long now = System.currentTimeMillis();
+            boolean done = till.before(new Timestamp(now));
+            if (done)
             {
                 new BukkitRunnable()
                 {
@@ -154,20 +159,23 @@ public class StrikeManager
                     }
                 }.runTaskAsynchronously(this.plugin);
             }
-            return done;
+            return !done;
         }
-        catch(SQLException ex)
+        catch (SQLException ex)
         {
-            
+            ex.printStackTrace();
         }
         finally
         {
-            if(result != null)
+            if (result != null)
             {
                 try
                 {
                     result.close();
-                }catch(SQLException ex){}
+                }
+                catch (SQLException ex)
+                {
+                }
             }
         }
         return false;

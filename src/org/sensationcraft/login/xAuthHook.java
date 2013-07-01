@@ -10,24 +10,27 @@ import org.sensationcraft.login.password.PasswordType;
 import org.sensationcraft.login.sql.Database;
 import org.sensationcraft.login.sql.H2;
 
-
-public class xAuthHook 
+public class xAuthHook
 {
+
     private SCLogin plugin;
-    
     private Database olddb;
-    
     private PreparedStatement getdata;
     private final Object getdataLock = new Object();
-    
     private PreparedStatement delid;
     private final Object delidLock = new Object();
-    
+
     protected xAuthHook(SCLogin plugin)
     {
         this.plugin = plugin;
-        File[] toDelete = new File[]{new File(plugin.getDataFolder(), "xAuth.h2.db"), new File(plugin.getDataFolder(), "xAuth.lock.db")};
-        if(!toDelete[0].exists()) return;
+        File[] toDelete = new File[]
+        {
+            new File(plugin.getDataFolder(), "xAuth.h2.db"), new File(plugin.getDataFolder(), "xAuth.lock.db")
+        };
+        if (!toDelete[0].exists())
+        {
+            return;
+        }
         olddb = new H2(plugin.getLogger(), this.plugin.getDataFolder(), "xAuth", "sa");
         if (olddb.connect())
         {
@@ -39,9 +42,9 @@ public class xAuthHook
                 {
                     plugin.getLogger().log(Level.INFO, "xAuth database seems to be completely copied, deleting old files...");
                     olddb.close();
-                    for(File f : toDelete)
+                    for (File f : toDelete)
                     {
-                        if(f.exists())
+                        if (f.exists())
                         {
                             f.delete();
                         }
@@ -74,30 +77,42 @@ public class xAuthHook
             plugin.getLogger().log(Level.INFO, "Hooked into the old xAuth database.");
         }
     }
-    
+
     public boolean isHooked()
     {
         return olddb != null && this.getdata != null;
     }
-    
+
     public void unhook()
     {
-        if(this.delid != null)
-        try
+        if (this.delid != null)
         {
-            this.delid.close();
-        }catch(SQLException ex){}
-        
-        if(this.getdata != null)
-        try
+            try
+            {
+                this.delid.close();
+            }
+            catch (SQLException ex)
+            {
+            }
+        }
+
+        if (this.getdata != null)
         {
-            this.getdata.close();
-        }catch(SQLException ex){}
-        
-        if(this.olddb != null)
-            this.olddb.close();        
+            try
+            {
+                this.getdata.close();
+            }
+            catch (SQLException ex)
+            {
+            }
+        }
+
+        if (this.olddb != null)
+        {
+            this.olddb.close();
+        }
     }
-    
+
     public void checkPassword(PasswordManager.PlayerCheck reference, String checkPass)
     {
         String player = reference.getName();
@@ -156,24 +171,27 @@ public class xAuthHook
         {
             checkPassHash = PasswordHandler.hash(checkPass, type.getAlgorithm());
         }
-        
+
         if (checkPassHash.equals(realPass))
         {
             reference.authenticate();
-            if(locked) reference.lock();
+            if (locked)
+            {
+                reference.lock();
+            }
             // update hash in database to use xAuth's hashing method
             Database.synchronizedExecuteUpdate(delid, delidLock, id);
         }
     }
-    
+
     public boolean isRegistered(String name)
     {
         try
         {
-            ResultSet result  = Database.synchronizedExecuteQuery(getdata, getdataLock, name);
+            ResultSet result = Database.synchronizedExecuteQuery(getdata, getdataLock, name);
             return (result != null && result.next());
         }
-        catch(SQLException ex)
+        catch (SQLException ex)
         {
             // Swallow the exception
         }

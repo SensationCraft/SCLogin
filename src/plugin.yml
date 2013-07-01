@@ -28,3 +28,6 @@ commands:
   unregister:
     description: unregisters the account you are logged in with
     usage: /<command>
+  safeguard:
+    description: Adds another layer of security to your account
+    usage: /<command> enable|disable

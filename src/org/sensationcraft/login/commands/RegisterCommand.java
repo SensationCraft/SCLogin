@@ -41,15 +41,9 @@ public class RegisterCommand extends SCLoginMasterCommand
             return true;
         }
 
-        if (args.length != 2)
+        if (args.length != 1)
         {
             sender.sendMessage(Messages.INVALID_SYNTAX.getMessage() + this.usage);
-            return true;
-        }
-
-        if (!args[0].equals(args[1]))
-        {
-            sender.sendMessage(Messages.PASSWORDS_DONT_MATCH.getMessage());
             return true;
         }
 

@@ -58,7 +58,7 @@ public class SCLoginCommand extends SCLoginMasterCommand
 
         final Subcommand sub = Subcommand.getSubcommand(args[0]);
 
-        if (args.length < 2 || ((sub == Subcommand.CHANGEPW && args.length < 4) || (sub == Subcommand.SAFEGUARD && args.length < 3)))
+        if (args.length < 2 || ((sub == Subcommand.CHANGEPW && args.length < 3) || (sub == Subcommand.SAFEGUARD && args.length < 3)))
         {
             sender.sendMessage("Invalid arguments!");
             return true;
@@ -67,12 +67,6 @@ public class SCLoginCommand extends SCLoginMasterCommand
         if (sub == Subcommand.CHANGEPW)
         {
             args[1] = args[1].toLowerCase();
-            if (!args[2].equals(args[3]))
-            {
-                sender.sendMessage(Messages.PASSWORDS_DONT_MATCH.getMessage());
-                return true;
-            }
-
             if (args[2].length() < 6)
             {
                 sender.sendMessage(Messages.PASSWORD_TOO_SHORT.getMessage());

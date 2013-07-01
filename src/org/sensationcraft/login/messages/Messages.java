@@ -9,33 +9,36 @@ import org.bukkit.ChatColor;
 public enum Messages
 {
     
-    ALREADY_REGISTERED("&cI'm sorry, you are already registered. You can use '/changepw' to change your password."),
-    ALREADY_LOGGEDIN("&cYou are already logged in."),
-    INCORRECT_PASSWORD("Incorrect password!"),
-    IP_DOESNT_MATCH("Your IP does not match with the last ip you authenticated with."),
-    IP_LOCKOUT("Your ip has been temporarily locked out because you surpassed the amount of tries when entering your password"),
-    INVALID_SYNTAX("&cInvalid syntax! Correct usage: "),
-    LOCKED("&cThat account is locked by an administrator."),
-    LOGIN_SUCCESS("&aYou have been logged in."),
-    LOGOUT("&aYou are no longer logged in."),
-    NOT_LOGGEDIN("&cYou have to login first."),
-    NOT_REGISTERED("&cThat account is not registered. Use /register <password> <confirm password> to register."),
-    NEW_PLAYER("Welcome to SensationCraft. It does not appear you logged in before. Please register using /register <password> <password>"),
-    PASSWORD_BLACKLISTED("&cPlease pick another password."),
-    PASSWORD_CHANGED("&aPassword changed."),
-    PASSWORD_TOO_SHORT("&cYour entered password is too short. At least 6 characters are required."),
-    PASSWORDS_DONT_MATCH("&cYour entered password and the confirmation password don't seem to match."),
-    REGISTER_SUCCESS("&aYou are now registered, use /login <password> to login."),
-    RELOAD_LOGOUT("&aServer reloaded, you have been automagically logged out."),
-    SAFEGUARD_ALREADY_DISABLED("&cSafegaurd already disabled."),
-    SAFEGUARD_ALREADY_ENABLED("&cSafegaurd already enabled."),
-    SAFEGUARD_DISABLED("&aSafegaurd disabled."),
-    SAFEGUARD_ENABLED("&aSafegaurd enabled. Don't forget to read the FAQ on the fora!"),
-    SAFEGUARD_INFO("&6This is ment to be another layer of security for your account. Before enabling this feature, please read the FAQ in the 'News' section!"),
-    UNREGISTER_SUCCESS("&aAccount unregistered. Use /register to register the account."),
-    UNREGISTER_FAILED("&cFailed to unregister the account."),
-    USERNAME_BLACKLISTED("&cPlease pick another username"),
-    WELCOME_BACK("&cWelcome back to SensationCraft. Please login using /login <password>");
+    ALREADY_REGISTERED("&c&lYour account has already been registered."),
+    ALREADY_LOGGEDIN("&c&lYou are already logged in."),
+    INCORRECT_PASSWORD("&c&lIncorrect password!"),
+    IP_DOESNT_MATCH("Your IP does not match with the last authenticated IP."),
+    IP_LOCKOUT("Your account has been temporarily locked for entering too many incorrects passwords."),
+    INVALID_SYNTAX("&c&lInvalid syntax! Correct usage: "),
+    LOCKED("&c&lThat account is locked by an administrator."),
+    LOGIN_SUCCESS("&a&lYou have been logged in."),
+    LOGOUT("&a&lYou are no longer logged in."),
+    NOT_LOGGEDIN("&e&lPlease login using /login <password>"),
+    NOT_REGISTERED("&c&lThat account is not registered. Use /register <password> <confirm password> to register."),
+    NEW_PLAYER("************************************************\n"+
+               "         WELCOME TO SENSATION CRAFT\n"+
+               "\n"+
+               "    Please register using /register <password>\n"+
+               "************************************************"),
+    PASSWORD_BLACKLISTED("&c&lPlease choose another password."),
+    PASSWORD_CHANGED("&a&lYour password has been changed."),
+    PASSWORD_TOO_SHORT("&c&lYour password is too short. At least 6 characters are required."),
+    REGISTER_SUCCESS("&a&lYour account has been registered. &eUse /login <password> to proceed.\n&e&lYour password is:  &n&l&e<Password>&e&l. DO NOT FORGET"),
+    RELOAD_LOGOUT("&a&lServer reloaded, you have been automaticly logged out."),
+    SAFEGUARD_ALREADY_DISABLED("&c&lSafegaurd already disabled."),
+    SAFEGUARD_ALREADY_ENABLED("&c&lSafegaurd already enabled."),
+    SAFEGUARD_DISABLED("&a&lSafegaurd disabled."),
+    SAFEGUARD_ENABLED("&a&lSafegaurd enabled. Don't forget to read the FAQ on the forum!"),
+    SAFEGUARD_INFO("&6&lThis is meant to be another layer of security for your account. Before enabling this feature, please read the FAQ in the 'News' section!"),
+    UNREGISTER_SUCCESS("&a&lYour account has been unregistered."),
+    UNREGISTER_FAILED("&c&lFailed to unregister the account."),
+    USERNAME_BLACKLISTED("&c&lPlease choose another username"),
+    WELCOME_BACK("&e&lPlease login using /login <password>");
     
     private final String message;
 

@@ -1,5 +1,7 @@
 package org.sensationcraft.login.listeners;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -8,16 +10,37 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.sensationcraft.login.SCLogin;
+import org.sensationcraft.login.messages.Messages;
 
 public class PlayerListener implements Listener
 {
     
     private SCLogin plugin;
     
+    private final Map<String, Integer> count = new HashMap<String, Integer>();
+    
     public PlayerListener(SCLogin plugin)
     {
         this.plugin = plugin;
+    }
+    
+    public boolean count(String name)
+    {
+        name = name.toLowerCase();
+        Integer i = count.get(name);
+        if(i == null)
+        {
+            i = 0;
+        }
+        else
+        {
+            i++;
+            i %= 3;
+        }
+        count.put(name, i);
+        return i == 0;
     }
     
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -36,7 +59,8 @@ public class PlayerListener implements Listener
         if(!plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
         {
             event.setTo(event.getFrom());
-            event.getPlayer().sendMessage(ChatColor.RED+"You need to login first.");
+            if(count(event.getPlayer().getName()))
+            event.getPlayer().sendMessage(Messages.NOT_LOGGEDIN.getMessage());
             //event.setCancelled(true);
             //plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 1, false);
         }
@@ -192,5 +216,12 @@ public class PlayerListener implements Listener
         {
             event.setCancelled(true);
         }
+    }
+    
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event)
+    {
+        String name = event.getPlayer().getName().toLowerCase();
+        this.count.remove(name);
     }
 }

@@ -17,11 +17,11 @@ commands:
     aliases: [q]
   changepassword:
     description: Change the password of your SCLogin account
-    usage: /<command> <old password> <new password> <confirm new password>
+    usage: /<command> <old password> <new password>
     aliases: [changepw,cpw]
   register:
     description: Register your SCLogin account
-    usage: /<command> <password> <confirm password>
+    usage: /<command> <password>
   sclogin:
     description: administration command for trusted staff
     usage: /<command> [subcommand]

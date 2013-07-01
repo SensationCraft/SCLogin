@@ -30,15 +30,9 @@ public class ChangePasswordCommand extends SCLoginMasterCommand
             return true;
         }
 
-        if (args.length != 3)
+        if (args.length != 2)
         {
             sender.sendMessage(Messages.INVALID_SYNTAX.toString() + this.usage);
-            return true;
-        }
-
-        if (!args[1].equals(args[2]))
-        {
-            sender.sendMessage(Messages.PASSWORDS_DONT_MATCH.getMessage());
             return true;
         }
 

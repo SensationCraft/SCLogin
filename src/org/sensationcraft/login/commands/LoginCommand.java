@@ -85,7 +85,7 @@ public class LoginCommand extends SCLoginMasterCommand
                     else
                     {
                         sender.sendMessage(Messages.INCORRECT_PASSWORD.getMessage());
-                        plugin.getStrikeManager().addStrikePoints((Player) sender, 34, true);
+                        plugin.getStrikeManager().addStrikePoints((Player) sender, 21, true);
                     }
                 }
             }

@@ -3,6 +3,7 @@ authors: [superckl, Fireblast709]
 version: 0.1
 main: org.sensationcraft.login.SCLogin
 website: www.sensationcraft.info
+depend: [ProtocolLib]
 commands:
   login:
     description: Login to your SCLogin account

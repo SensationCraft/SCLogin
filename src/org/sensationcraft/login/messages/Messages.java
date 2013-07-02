@@ -41,14 +41,37 @@ public enum Messages
     WELCOME_BACK("&e&lPlease login using /login <password>");
     
     private final String message;
+    
+    private final String uncoloured;
 
     Messages(String msg)
     {
         this.message = ChatColor.translateAlternateColorCodes('&', msg);
+        this.uncoloured = ChatColor.stripColor(this.message);
     }
 
     public String getMessage()
     {
         return this.message;
+    }
+    
+    public String getNonColoured()
+    {
+        return this.uncoloured;
+    }
+    
+    public static boolean isSCLoginMessage(String message)
+    {
+        message = ChatColor.stripColor(message);
+        int len;
+        String mes;
+        for(Messages msg : values())
+        {
+            if(message.startsWith(msg.getNonColoured()))
+            {
+                return true;
+            }
+        }
+        return message.startsWith("An error occurred");
     }
 }

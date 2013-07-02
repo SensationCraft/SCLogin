@@ -20,6 +20,7 @@ import org.sensationcraft.login.commands.SCLoginMasterCommand;
 import org.sensationcraft.login.commands.SafeguardCommand;
 import org.sensationcraft.login.commands.UnregisterCommand;
 import org.sensationcraft.login.listeners.AuthenticationListener;
+import org.sensationcraft.login.listeners.ChatPacketListener;
 import org.sensationcraft.login.listeners.InventoryListener;
 import org.sensationcraft.login.listeners.PlayerListener;
 import org.sensationcraft.login.messages.Messages;
@@ -27,6 +28,8 @@ import org.sensationcraft.login.sql.Database;
 import org.sensationcraft.login.sql.SQLite;
 import org.sensationcraft.login.sql.TableBuilder;
 import org.sensationcraft.login.strikes.StrikeManager;
+
+import com.comphenix.protocol.ProtocolLibrary;
 
 public class SCLogin extends JavaPlugin
 {
@@ -51,6 +54,7 @@ public class SCLogin extends JavaPlugin
         this.getServer().getPluginManager().registerEvents(new AuthenticationListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
+        ProtocolLibrary.getProtocolManager().addPacketListener(new ChatPacketListener(this));
         this.getLogger().info("Initializing hook");
         this.hook = new xAuthHook(this);
         this.getLogger().info("Initializing SQLite connection");

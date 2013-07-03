@@ -6,12 +6,12 @@ import org.bukkit.command.CommandSender;
 public abstract class SCLoginMasterCommand
 {
 
-	final String usage;
+    final String usage;
 
-	SCLoginMasterCommand(final String command)
-	{
-		this.usage = Bukkit.getPluginCommand(command).getUsage();
-	}
+    SCLoginMasterCommand(String command)
+    {
+        this.usage = Bukkit.getPluginCommand(command).getUsage();
+    }
 
-	public abstract boolean execute(CommandSender sender, String[] args);
+    public abstract boolean execute(CommandSender sender, String[] args);
 }

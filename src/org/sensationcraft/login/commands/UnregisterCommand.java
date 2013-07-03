@@ -11,45 +11,49 @@ import org.sensationcraft.login.messages.Messages;
 public class UnregisterCommand extends SCLoginMasterCommand
 {
 
-	private final SCLogin scLogin;
-	private final PlayerManager manager;
+    private SCLogin scLogin;
+    private PlayerManager manager;
 
-	public UnregisterCommand(final SCLogin scLogin)
-	{
-		super("unregister");
-		this.scLogin = scLogin;
-		this.manager = this.scLogin.getPlayerManager();
-	}
+    public UnregisterCommand(SCLogin scLogin)
+    {
+        super("unregister");
+        this.scLogin = scLogin;
+        this.manager = this.scLogin.getPlayerManager();
+    }
 
-	@Override
-	public boolean execute(final CommandSender sender, final String[] args)
-	{
-		if (sender instanceof Player == false)
-		{
-			sender.sendMessage("This command can only be used by players");
-			return true;
-		}
+    @Override
+    public boolean execute(final CommandSender sender, final String[] args)
+    {
+        if (sender instanceof Player == false)
+        {
+            sender.sendMessage("This command can only be used by players");
+            return true;
+        }
 
-		((Player) sender).getAddress().getAddress().getHostAddress();
+        final String ip = ((Player) sender).getAddress().getAddress().getHostAddress();
 
-		new BukkitRunnable()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					if (UnregisterCommand.this.manager.unregister(sender.getName().toLowerCase()))
-						sender.sendMessage(Messages.UNREGISTER_SUCCESS.getMessage());
-					else
-						sender.sendMessage(Messages.UNREGISTER_FAILED.getMessage());
-				}
-				catch (final Exception ex)
-				{
-					sender.sendMessage(ChatColor.RED + "An error occurred while attempting to unregister you. Please contact a member of staff on sensationcraft.info");
-				}
-			}
-		}.runTaskAsynchronously(this.scLogin);
-		return true;
-	}
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    if (UnregisterCommand.this.manager.unregister(sender.getName().toLowerCase()))
+                    {
+                        sender.sendMessage(Messages.UNREGISTER_SUCCESS.getMessage());
+                    }
+                    else
+                    {
+                        sender.sendMessage(Messages.UNREGISTER_FAILED.getMessage());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    sender.sendMessage(ChatColor.RED + "An error occurred while attempting to unregister you. Please contact a member of staff on sensationcraft.info");
+                }
+            }
+        }.runTaskAsynchronously(this.scLogin);
+        return true;
+    }
 }

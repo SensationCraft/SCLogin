@@ -2,7 +2,8 @@ package org.sensationcraft.login.listeners;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,133 +16,137 @@ import org.sensationcraft.login.messages.Messages;
 
 public class PlayerListener implements Listener
 {
-
-	private final SCLogin plugin;
-
-	private final Map<String, Integer> count = new HashMap<String, Integer>();
-
-	public PlayerListener(final SCLogin plugin)
-	{
-		this.plugin = plugin;
-	}
-
-	public boolean count(String name)
-	{
-		name = name.toLowerCase();
-		Integer i = this.count.get(name);
-		if(i == null)
-			i = 0;
-		else
-		{
-			i++;
-			i %= 3;
-		}
-		this.count.put(name, i);
-		return i == 0;
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onConsume(final org.bukkit.event.player.PlayerItemConsumeEvent event)
-	{
-		if(!this.plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
-		{
-			event.setCancelled(true);
-			this.plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 50, false);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onMove(final org.bukkit.event.player.PlayerMoveEvent event)
-	{
-		if(!this.plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
-		{
-			event.setTo(event.getFrom());
-			if(this.count(event.getPlayer().getName()))
-				event.getPlayer().sendMessage(Messages.NOT_LOGGEDIN.getMessage());
-			//event.setCancelled(true);
-			//plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 1, false);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onTeleport(final org.bukkit.event.player.PlayerTeleportEvent event)
-	{
-		if(!this.plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
-		{
-			//event.setTo(event.getFrom());
-			//event.setCancelled(true);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onDealDamage(final org.bukkit.event.entity.EntityDamageByEntityEvent event)
-	{
-		if(event.getDamager() instanceof Player == false) return;
-		final Player player = (Player) event.getDamager();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-		{
-			event.setDamage(0);
-			event.setCancelled(true);
-			this.plugin.getStrikeManager().addStrikePoints(player, 10, false);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onTakeDamage(final org.bukkit.event.entity.EntityDamageEvent event)
-	{
-		if(event.getEntity() instanceof Player == false) return;
-		final Player player = (Player) event.getEntity();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-		{
-			event.setDamage(0);
-			event.setCancelled(true);
-			this.plugin.getStrikeManager().addStrikePoints(player, 10, false);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onInteract(final org.bukkit.event.player.PlayerInteractEvent event)
-	{
-		final Player player = event.getPlayer();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-		{
-			event.setCancelled(true);
-			this.plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlace(final org.bukkit.event.block.BlockPlaceEvent event)
-	{
-		final Player player = event.getPlayer();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-		{
-			event.setCancelled(true);
-			event.setBuild(false);
-			this.plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onBreak(final org.bukkit.event.block.BlockBreakEvent event)
-	{
-		final Player player = event.getPlayer();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-		{
-			event.setCancelled(true);
-			this.plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPickup(final org.bukkit.event.player.PlayerPickupItemEvent event)
-	{
-		final Player player = event.getPlayer();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-			event.setCancelled(true);
-	}
-
-	/*@EventHandler(priority = EventPriority.LOWEST)
+    
+    private SCLogin plugin;
+    
+    private final Map<String, Integer> count = new HashMap<String, Integer>();
+    
+    public PlayerListener(SCLogin plugin)
+    {
+        this.plugin = plugin;
+    }
+    
+    public boolean count(String name)
+    {
+        name = name.toLowerCase();
+        Integer i = count.get(name);
+        if(i == null)
+        {
+            i = 0;
+        }
+        else
+        {
+            i++;
+            i %= 3;
+        }
+        count.put(name, i);
+        return i == 0;
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onConsume(org.bukkit.event.player.PlayerItemConsumeEvent event)
+    {
+        if(!plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
+        {
+            event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 50, false);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onMove(org.bukkit.event.player.PlayerMoveEvent event)
+    {
+        if(!plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
+        {
+            event.setTo(event.getFrom());
+            if(count(event.getPlayer().getName()))
+            event.getPlayer().sendMessage(Messages.NOT_LOGGEDIN.getMessage());
+            //event.setCancelled(true);
+            //plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 1, false);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onTeleport(org.bukkit.event.player.PlayerTeleportEvent event)
+    {
+        if(!plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
+        {
+            //event.setTo(event.getFrom());
+            //event.setCancelled(true);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDealDamage(org.bukkit.event.entity.EntityDamageByEntityEvent event)
+    {
+        if(event.getDamager() instanceof Player == false) return;
+        Player player = (Player) event.getDamager();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setDamage(0);
+            event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(player, 10, false);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onTakeDamage(org.bukkit.event.entity.EntityDamageEvent event)
+    {
+        if(event.getEntity() instanceof Player == false) return;
+        Player player = (Player) event.getEntity();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setDamage(0);
+            event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(player, 10, false);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInteract(org.bukkit.event.player.PlayerInteractEvent event)
+    {
+        Player player = event.getPlayer();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlace(org.bukkit.event.block.BlockPlaceEvent event)
+    {
+        Player player = (Player) event.getPlayer();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setCancelled(true);
+            event.setBuild(false);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onBreak(org.bukkit.event.block.BlockBreakEvent event)
+    {
+        Player player = (Player) event.getPlayer();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPickup(org.bukkit.event.player.PlayerPickupItemEvent event)
+    {
+        Player player = (Player) event.getPlayer();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setCancelled(true);
+        }
+    }
+    
+    /*@EventHandler(priority = EventPriority.LOWEST)
     public void onDamageItem(org.bukkit.event.player.PlayerItemDamageEvent event)
     {
         Player player = (Player) event.getPlayer();
@@ -151,70 +156,72 @@ public class PlayerListener implements Listener
             plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
         }
     }*/
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onDrop(final org.bukkit.event.player.PlayerDropItemEvent event)
-	{
-		final Player player = event.getPlayer();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-		{
-			event.setCancelled(true);
-			this.plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onChat(final org.bukkit.event.player.AsyncPlayerChatEvent event)
-	{
-		final Player player = event.getPlayer();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-		{
-			event.setCancelled(true);
-			this.plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onCommand(final org.bukkit.event.player.PlayerCommandPreprocessEvent event)
-	{
-		final Player player = event.getPlayer();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-		{
-			final String cmd = event.getMessage().split(" ")[0];
-			if(!cmd.equals("/l") && !cmd.equalsIgnoreCase("/login") && !cmd.equalsIgnoreCase("/register"))
-			{
-				event.setCancelled(true);
-				event.setMessage("/thiscommanddoesnotexistmate");
-				this.plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 20, false);
-			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onHeal(final EntityRegainHealthEvent event)
-	{
-		if(event.getEntity() instanceof Player == false) return;
-		final Player player = (Player) event.getEntity();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-		{
-			event.setAmount(0);
-			event.setCancelled(true);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onFeed(final FoodLevelChangeEvent event)
-	{
-		if(event.getEntity() instanceof Player == false) return;
-		final Player player = (Player) event.getEntity();
-		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
-			event.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onQuit(final PlayerQuitEvent event)
-	{
-		final String name = event.getPlayer().getName().toLowerCase();
-		this.count.remove(name);
-	}
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDrop(org.bukkit.event.player.PlayerDropItemEvent event)
+    {
+        Player player = (Player) event.getPlayer();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onChat(org.bukkit.event.player.AsyncPlayerChatEvent event)
+    {
+        Player player = (Player) event.getPlayer();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setCancelled(true);
+            plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 10, false);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onCommand(org.bukkit.event.player.PlayerCommandPreprocessEvent event)
+    {
+        Player player = (Player) event.getPlayer();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            String cmd = event.getMessage().split(" ")[0];
+            if(!cmd.equals("/l") && !cmd.equalsIgnoreCase("/login") && !cmd.equalsIgnoreCase("/register"))
+            {
+                event.setCancelled(true);
+                event.setMessage("/thiscommanddoesnotexistmate");
+                plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 20, false);
+            }
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onHeal(EntityRegainHealthEvent event)
+    {
+        if(event.getEntity() instanceof Player == false) return;
+        Player player = (Player) event.getEntity();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setAmount(0);
+            event.setCancelled(true);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onFeed(FoodLevelChangeEvent event)
+    {
+        if(event.getEntity() instanceof Player == false) return;
+        Player player = (Player) event.getEntity();
+        if(!plugin.getPlayerManager().isLoggedIn(player.getName()))
+        {
+            event.setCancelled(true);
+        }
+    }
+    
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event)
+    {
+        String name = event.getPlayer().getName().toLowerCase();
+        this.count.remove(name);
+    }
 }

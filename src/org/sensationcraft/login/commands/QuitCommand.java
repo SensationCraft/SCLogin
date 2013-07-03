@@ -8,25 +8,25 @@ import org.sensationcraft.login.SCLogin;
 public class QuitCommand extends SCLoginMasterCommand
 {
 
-    private SCLogin plugin;
+	private final SCLogin plugin;
 
-    public QuitCommand(SCLogin plugin)
-    {
-        super("quit");
-        this.plugin = plugin;
-    }
+	public QuitCommand(final SCLogin plugin)
+	{
+		super("quit");
+		this.plugin = plugin;
+	}
 
-    @Override
-    public boolean execute(final CommandSender sender, final String[] args)
-    {
-        if (sender instanceof Player == false)
-        {
-            sender.sendMessage("This command can only be used by players");
-            return true;
-        }
+	@Override
+	public boolean execute(final CommandSender sender, final String[] args)
+	{
+		if (sender instanceof Player == false)
+		{
+			sender.sendMessage("This command can only be used by players");
+			return true;
+		}
 
-        ((Player) sender).kickPlayer(ChatColor.GREEN + "Client closed the connection.");
-        return true;
+		((Player) sender).kickPlayer(ChatColor.GREEN + "Client closed the connection.");
+		return true;
 
-    }
+	}
 }

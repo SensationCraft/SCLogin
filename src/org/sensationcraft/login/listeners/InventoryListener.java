@@ -10,29 +10,25 @@ import org.sensationcraft.login.SCLogin;
 public class InventoryListener implements Listener
 {
 
-    private SCLogin plugin;
+	private final SCLogin plugin;
 
-    public InventoryListener(SCLogin plugin)
-    {
-        this.plugin = plugin;
-    }
+	public InventoryListener(final SCLogin plugin)
+	{
+		this.plugin = plugin;
+	}
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onClick(org.bukkit.event.inventory.InventoryInteractEvent event)
-    {
-        if (event.getWhoClicked() instanceof Player == false)
-        {
-            return;
-        }
-        Player player = (Player) event.getWhoClicked();
-        if (this.plugin.getPlayerManager().isLoggedIn(player.getName().toLowerCase()))
-        {
-            return;
-        }
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onClick(final org.bukkit.event.inventory.InventoryInteractEvent event)
+	{
+		if (event.getWhoClicked() instanceof Player == false)
+			return;
+		final Player player = (Player) event.getWhoClicked();
+		if (this.plugin.getPlayerManager().isLoggedIn(player.getName().toLowerCase()))
+			return;
 
-        event.setCancelled(true);
-        event.setResult(Event.Result.DENY);
+		event.setCancelled(true);
+		event.setResult(Event.Result.DENY);
 
-        this.plugin.getStrikeManager().addStrikePoints(player, 34, false);
-    }
+		this.plugin.getStrikeManager().addStrikePoints(player, 34, false);
+	}
 }

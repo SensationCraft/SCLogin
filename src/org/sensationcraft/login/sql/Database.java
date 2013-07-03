@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.sensationcraft.login.SCLogin;
 
 public abstract class Database
@@ -15,7 +16,7 @@ public abstract class Database
 
 	private final Logger log;
 
-	protected Database(Logger log)
+	protected Database(final Logger log)
 	{
 		this.log = log;
 	}
@@ -23,19 +24,19 @@ public abstract class Database
 	public abstract boolean initialize();
 
 	public abstract boolean connect();
-        
-        public void close()
-        {
-            try
-            {
-                this.con.close();
-                this.con = null;
-            }
-            catch(SQLException ex)
-            {
-                log("An exception occurred while closing the connection: %s", ex.getMessage());
-            }
-        }
+
+	public void close()
+	{
+		try
+		{
+			this.con.close();
+			this.con = null;
+		}
+		catch(final SQLException ex)
+		{
+			this.log("An exception occurred while closing the connection: %s", ex.getMessage());
+		}
+	}
 
 	public boolean isReady()
 	{
@@ -54,56 +55,50 @@ public abstract class Database
 	public abstract ResultSet executeQuery(String query);
 
 	public abstract PreparedStatement prepare(String query);
-        
-        public static void synchronizedExecuteUpdate(final PreparedStatement stmt, final Object lock, final Object...params)
-        {
-            synchronized(lock)
-            {
-                try
-                {
-                    for(int i = 1; i <= params.length; i++)
-                    {
-                        stmt.setObject(i, params[i-1]);
-                    }
-                    stmt.executeUpdate();
-                }
-                catch(SQLException ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-        }
-        
-        public static ResultSet synchronizedExecuteQuery(final PreparedStatement stmt, final Object lock, final Object...params)
-        {
-            synchronized(lock)
-            {
-                try
-                {
-                    for(int i = 1; i <= params.length; i++)
-                    {
-                        stmt.setObject(i, params[i-1]);
-                    }
-                    return stmt.executeQuery();
-                }
-                catch(SQLException ex)
-                {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-        }
 
-	protected void log(String msg, Object...o)
+	public static void synchronizedExecuteUpdate(final PreparedStatement stmt, final Object lock, final Object...params)
 	{
-                if(SCLogin.debug)
-                {
-                    StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-                    for(StackTraceElement t : trace)
-                    {
-                        System.out.println(String.format("Called by %s, in %s on %d", t.getMethodName(), t.getFileName(), t.getLineNumber()));
-                    }
-                }
+		synchronized(lock)
+		{
+			try
+			{
+				for(int i = 1; i <= params.length; i++)
+					stmt.setObject(i, params[i-1]);
+				stmt.executeUpdate();
+			}
+			catch(final SQLException ex)
+			{
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	public static ResultSet synchronizedExecuteQuery(final PreparedStatement stmt, final Object lock, final Object...params)
+	{
+		synchronized(lock)
+		{
+			try
+			{
+				for(int i = 1; i <= params.length; i++)
+					stmt.setObject(i, params[i-1]);
+				return stmt.executeQuery();
+			}
+			catch(final SQLException ex)
+			{
+				ex.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+	protected void log(final String msg, final Object...o)
+	{
+		if(SCLogin.debug)
+		{
+			final StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+			for(final StackTraceElement t : trace)
+				System.out.println(String.format("Called by %s, in %s on %d", t.getMethodName(), t.getFileName(), t.getLineNumber()));
+		}
 		this.log.log(Level.SEVERE, String.format(msg, o));
 	}
 }

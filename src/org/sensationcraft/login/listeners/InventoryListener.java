@@ -18,7 +18,22 @@ public class InventoryListener implements Listener
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onClick(final org.bukkit.event.inventory.InventoryInteractEvent event)
+	public void onClick(final org.bukkit.event.inventory.InventoryClickEvent event)
+	{
+		if (event.getWhoClicked() instanceof Player == false)
+			return;
+		final Player player = (Player) event.getWhoClicked();
+		if (this.plugin.getPlayerManager().isLoggedIn(player.getName().toLowerCase()))
+			return;
+
+		event.setCancelled(true);
+		event.setResult(Event.Result.DENY);
+
+		this.plugin.getStrikeManager().addStrikePoints(player, 34, false);
+	}
+        
+        @EventHandler(priority = EventPriority.HIGHEST)
+	public void onDrag(final org.bukkit.event.inventory.InventoryDragEvent event)
 	{
 		if (event.getWhoClicked() instanceof Player == false)
 			return;

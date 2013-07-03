@@ -19,7 +19,8 @@ public enum Messages
 	LOGIN_SUCCESS("&a&lYou have been logged in."),
 	LOGOUT("&a&lYou are no longer logged in."),
 	NOT_LOGGEDIN("&e&lPlease login using /login <password>"),
-	NOT_REGISTERED("&c&lThat account is not registered. Use /register <password> <confirm password> to register."),
+        NOT_REGISTERED_YET("&e&lPlease register using /register <password>"),
+	NOT_REGISTERED("&c&lThat account is not registered. Use /register <password> to register."),
 	NEW_PLAYER("&e&l************************************************\n"+
 			"&e&l         WELCOME TO SENSATION CRAFT\n"+
 			"\n"+

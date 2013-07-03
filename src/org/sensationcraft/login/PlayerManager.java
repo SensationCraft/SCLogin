@@ -25,7 +25,7 @@ public class PlayerManager
 
 	public enum Status
 	{
-		NOT_LOGGED_IN, AUTHENTICATED;
+		NOT_REGISTERED, NOT_LOGGED_IN, AUTHENTICATED;
 	}
 	public Map<String, Status> playerStatus = new HashMap<String, Status>();
 	private final Object statusLock = new Object();
@@ -102,6 +102,15 @@ public class PlayerManager
 		}
 		return false;
 	}
+        
+        public boolean hasRegistered(String name)
+        {
+            name = name.toLowerCase();
+            synchronized(this.statusLock)
+            {
+                return this.playerStatus.get(name) == Status.NOT_LOGGED_IN;
+            }
+        }
 
 	public String getLastIp(final String name)
 	{
@@ -174,11 +183,11 @@ public class PlayerManager
 		}
 	}
 
-	public void join(final String name)
+	public void join(final String name, boolean isRegistered)
 	{
 		synchronized (this.statusLock)
 		{
-			this.playerStatus.put(name.toLowerCase(), Status.NOT_LOGGED_IN);
+			this.playerStatus.put(name.toLowerCase(), isRegistered ? Status.NOT_LOGGED_IN : Status.NOT_REGISTERED);
 		}
 	}
 

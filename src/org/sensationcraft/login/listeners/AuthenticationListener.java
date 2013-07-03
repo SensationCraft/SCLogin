@@ -110,8 +110,10 @@ public class AuthenticationListener implements Listener
 			e.disallow(Result.KICK_OTHER, "You are already online!");
 			return;
 		}
+                boolean registered = false;
 		if (this.plugin.getPlayerManager().isRegistered(name))
 		{
+                        registered = true;
 			final String ip = this.plugin.getPlayerManager().getLastIp(name);
 			if (this.plugin.getStrikeManager().isIpLockedout(ip))
 			{
@@ -126,7 +128,7 @@ public class AuthenticationListener implements Listener
 				return;
 			}
 		}
-		this.plugin.getPlayerManager().join(name);
+		this.plugin.getPlayerManager().join(name, registered);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -148,7 +150,7 @@ public class AuthenticationListener implements Listener
 		{
 			if (other.canSee(player))
 				other.hidePlayer(player);
-			if (player.canSee(other) && !this.plugin.getPlayerManager().isLoggedIn(other.getName()))
+			if (player.canSee(other))
 				player.hidePlayer(other);
 		}
 

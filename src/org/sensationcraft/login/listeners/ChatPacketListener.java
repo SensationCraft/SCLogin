@@ -35,7 +35,6 @@ public class ChatPacketListener extends PacketAdapter
 			if(Messages.isSCLoginMessage(message)) return;
 			if(!((SCLogin)this.getPlugin()).getPlayerManager().isLoggedIn(player.getName()))
 			{
-				System.out.printf("[BLOCKED]: %s\n", message);
 				event.setCancelled(true);
 			}
 		}

@@ -53,11 +53,12 @@ public class PlayerListener implements Listener
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMove(final org.bukkit.event.player.PlayerMoveEvent event)
 	{
-		if(!this.plugin.getPlayerManager().isLoggedIn(event.getPlayer().getName()))
+                final String name = event.getPlayer().getName();
+		if(!this.plugin.getPlayerManager().isLoggedIn(name))
 		{
 			event.setTo(event.getFrom());
-			if(this.count(event.getPlayer().getName()))
-				event.getPlayer().sendMessage(Messages.NOT_LOGGEDIN.getMessage());
+			if(this.count(name))
+				event.getPlayer().sendMessage(this.plugin.getPlayerManager().hasRegistered(name) ? Messages.NOT_LOGGEDIN.getMessage() : Messages.NOT_REGISTERED_YET.getMessage());
 			//event.setCancelled(true);
 			//plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 1, false);
 		}

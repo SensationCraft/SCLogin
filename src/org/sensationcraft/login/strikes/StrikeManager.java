@@ -103,7 +103,7 @@ public class StrikeManager
                  }.runTask(plugin);*/
 			}
 		} else
-			player.sendMessage(Messages.NOT_LOGGEDIN.getMessage());
+			player.sendMessage(this.plugin.getPlayerManager().hasRegistered(name) ? Messages.NOT_LOGGEDIN.getMessage() : Messages.NOT_REGISTERED_YET.getMessage());
 	}
 
 	public void resetStrikePoints(final String name, final boolean highPriority)
@@ -120,7 +120,6 @@ public class StrikeManager
 		{
 			if (result == null || !result.next())
 			{
-				System.out.println("Nothing found.");
 				return false;
 			}
 

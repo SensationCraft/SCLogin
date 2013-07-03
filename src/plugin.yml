@@ -9,9 +9,9 @@ commands:
     description: Login to your SCLogin account
     usage: /<command> <password>
     aliases: [l]
-  logout:
-    description: Logout from your SCLogin account
-    usage: /<command>
+#  logout:
+#    description: Logout from your SCLogin account
+#    usage: /<command>
   quit:
     description: Safe quit command, useful for evading combat loggers
     usage: /<command>

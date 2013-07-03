@@ -68,9 +68,9 @@ public class RegisterCommand extends SCLoginMasterCommand
             {
                 try
                 {
-                    if (RegisterCommand.this.manager.register(sender.getName().toLowerCase(), args[1], ip))
+                    if (RegisterCommand.this.manager.register(sender.getName().toLowerCase(), args[0], ip))
                     {
-                        sender.sendMessage(Messages.REGISTER_SUCCESS.getMessage());
+                        sender.sendMessage(Messages.REGISTER_SUCCESS.getMessage().replace("<password>", args[0]));
                     }
                     else
                     {

@@ -24,7 +24,7 @@ public class ChatPacketListener extends PacketAdapter
     }
 
     @Override
-    public void onPacketReceiving(PacketEvent event)
+    public void onPacketSending(PacketEvent event)
     {
         if (event.getPacketID() == Packets.Server.CHAT)
         {
@@ -34,6 +34,7 @@ public class ChatPacketListener extends PacketAdapter
             if(Messages.isSCLoginMessage(message)) return;
             if(!((SCLogin)getPlugin()).getPlayerManager().isLoggedIn(player.getName()))
             {
+                System.out.printf("[BLOCKED]: %s\n", message);
                 event.setCancelled(true);
             }
         }

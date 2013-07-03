@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sensationcraft.login.PlayerManager;
 import org.sensationcraft.login.SCLogin;
+import org.sensationcraft.login.messages.Messages;
 
 public class LogoutCommand extends SCLoginMasterCommand
 {
@@ -33,8 +34,8 @@ public class LogoutCommand extends SCLoginMasterCommand
             @Override
             public void run()
             {
+                sender.sendMessage(Messages.LOGOUT.getMessage());
                 LogoutCommand.this.manager.quit(sender.getName().toLowerCase());
-                sender.sendMessage(ChatColor.GREEN + "You are no longer logged in.");
             }
         }.runTaskAsynchronously(this.plugin);
         return true;

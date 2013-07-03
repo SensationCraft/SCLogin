@@ -251,7 +251,7 @@ public class PlayerManager
 
         Database.synchronizedExecuteUpdate(unregister, unregisterLock, name);
 
-        return this.isRegistered(name);
+        return !this.isRegistered(name);
     }
 
     public boolean isLocked(String name)

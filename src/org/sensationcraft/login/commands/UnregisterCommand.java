@@ -42,6 +42,7 @@ public class UnregisterCommand extends SCLoginMasterCommand
                     if (UnregisterCommand.this.manager.unregister(sender.getName().toLowerCase()))
                     {
                         sender.sendMessage(Messages.UNREGISTER_SUCCESS.getMessage());
+                        UnregisterCommand.this.manager.quit(sender.getName().toLowerCase());
                     }
                     else
                     {

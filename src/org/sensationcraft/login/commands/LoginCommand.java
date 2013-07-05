@@ -45,6 +45,8 @@ public class LoginCommand extends SCLoginMasterCommand
 
         final String name = player.getName().toLowerCase();
 
+        sender.sendMessage(Messages.LOGGING_IN.getMessage());
+        
         new BukkitRunnable()
         {
             @Override

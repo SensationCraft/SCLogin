@@ -1,10 +1,10 @@
 package org.sensationcraft.login;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sensationcraft.login.commands.ChangePasswordCommand;
 import org.sensationcraft.login.commands.LoginCommand;
-import org.sensationcraft.login.commands.LogoutCommand;
 import org.sensationcraft.login.commands.QuitCommand;
 import org.sensationcraft.login.commands.RegisterCommand;
 import org.sensationcraft.login.commands.SCLoginCommand;
@@ -28,8 +27,6 @@ import org.sensationcraft.login.sql.Database;
 import org.sensationcraft.login.sql.SQLite;
 import org.sensationcraft.login.sql.TableBuilder;
 import org.sensationcraft.login.strikes.StrikeManager;
-
-import com.comphenix.protocol.ProtocolLibrary;
 
 public class SCLogin extends JavaPlugin
 {
@@ -121,7 +118,7 @@ public class SCLogin extends JavaPlugin
 			players.addColumn("password", "varchar(100)").addProperty("NOT NULL");
 			players.addColumn("lastip", "varchar(16)").addProperty("NOT NULL");
 			players.addColumn("email", "varchar(50)").addProperty("DEFAULT ''");
-			players.addColumn("locked", "TINYINT").addProperty("DEFAULT 0");
+			players.addColumn("locked", "TINYINT").addProperty("NOT NULL ").addProperty("DEFAULT 0");
 			players.setPrimaryKey("id");
 			players.createTable(this.database);
 		}
@@ -174,7 +171,7 @@ public class SCLogin extends JavaPlugin
 		this.commands.put("register", new RegisterCommand(this));
 		this.commands.put("unregister", new UnregisterCommand(this));
 		this.commands.put("sclogin", new SCLoginCommand(this));
-		this.commands.put("logout", new LogoutCommand(this));
+		//this.commands.put("logout", new LogoutCommand(this));
 		this.commands.put("safeguard", new SafeguardCommand(this));
 
 		final QuitCommand quit = new QuitCommand();

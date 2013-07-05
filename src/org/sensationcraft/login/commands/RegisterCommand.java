@@ -37,7 +37,7 @@ public class RegisterCommand extends SCLoginMasterCommand
 
 		final int len = sender.getName().length();
 
-		if (sender.getName().replaceAll("_-\\.\\*!", "").length() != len)
+		if (sender.getName().replaceAll("\\.\\*!", "").length() != len)
 		{
 			sender.sendMessage(Messages.USERNAME_BLACKLISTED.getMessage());
 			return true;
@@ -71,8 +71,11 @@ public class RegisterCommand extends SCLoginMasterCommand
 				try
 				{
 					if (RegisterCommand.this.manager.register(sender.getName().toLowerCase(), args[0], ip))
-						sender.sendMessage(Messages.REGISTER_SUCCESS.getMessage().replace("<password>", args[0]));
-					else
+                                        {
+						sender.sendMessage(Messages.REGISTER_SUCCESS.getMessage().replace("%password%", args[0]));
+                                                RegisterCommand.this.manager.join(sender.getName().toLowerCase(), true);
+                                        }
+                                        else
 						sender.sendMessage(Messages.ALREADY_REGISTERED.getMessage());
 				}
 				catch (final Exception ex)

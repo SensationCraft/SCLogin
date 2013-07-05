@@ -16,6 +16,7 @@ public enum Messages
 	IP_LOCKOUT("Your account has been temporarily locked for entering too many incorrects passwords."),
 	INVALID_SYNTAX("&c&lInvalid syntax! Correct usage: "),
 	LOCKED("&c&lThat account is locked by an administrator."),
+        LOGGING_IN("&a&l&oLogging in..."),
 	LOGIN_SUCCESS("&a&lYou have been logged in."),
 	LOGOUT("&a&lYou are no longer logged in."),
 	NOT_LOGGEDIN("&e&lPlease login using /login <password>"),
@@ -26,20 +27,20 @@ public enum Messages
 			"\n"+
 			"&e&l    Please register using /register <password>\n"+
 			"&e&l************************************************"),
-			PASSWORD_BLACKLISTED("&c&lPlease choose another password."),
-			PASSWORD_CHANGED("&a&lYour password has been changed."),
-			PASSWORD_TOO_SHORT("&c&lYour password is too short. At least 6 characters are required."),
-			REGISTER_SUCCESS("&a&lYour account has been registered. \n&eUse /login <password> to proceed.\n&e&lYour password is:  &n&l&e<password>&e&l. DO NOT FORGET"),
-			RELOAD_LOGOUT("&a&lServer reloaded, you have been automaticly logged out."),
-			SAFEGUARD_ALREADY_DISABLED("&c&lSafegaurd already disabled."),
-			SAFEGUARD_ALREADY_ENABLED("&c&lSafegaurd already enabled."),
-			SAFEGUARD_DISABLED("&a&lSafegaurd disabled."),
-			SAFEGUARD_ENABLED("&a&lSafegaurd enabled. Don't forget to read the FAQ on the forum!"),
-			SAFEGUARD_INFO("&6&lThis is meant to be another layer of security for your account. Before enabling this feature, please read the FAQ in the 'News' section!"),
-			UNREGISTER_SUCCESS("&a&lYour account has been unregistered."),
-			UNREGISTER_FAILED("&c&lFailed to unregister the account."),
-			USERNAME_BLACKLISTED("&c&lPlease choose another username"),
-			WELCOME_BACK("&e&lPlease login using /login <password>");
+        PASSWORD_BLACKLISTED("&c&lPlease choose another password."),
+        PASSWORD_CHANGED("&a&lYour password has been changed."),
+        PASSWORD_TOO_SHORT("&c&lYour password is too short. At least 6 characters are required."),
+        REGISTER_SUCCESS("&a&lYour account has been registered.\n&eUse /login <password> to proceed.\n&e&lYour password is:  &n&l&e%password%&e&l. DO NOT FORGET"),
+        RELOAD_LOGOUT("&a&lServer reloaded, you have been automaticly logged out."),
+        SAFEGUARD_ALREADY_DISABLED("&c&lSafegaurd already disabled."),
+        SAFEGUARD_ALREADY_ENABLED("&c&lSafegaurd already enabled."),
+        SAFEGUARD_DISABLED("&a&lSafegaurd disabled."),
+        SAFEGUARD_ENABLED("&a&lSafegaurd enabled. Don't forget to read the FAQ on the forum!"),
+        SAFEGUARD_INFO("&6&lThis is meant to be another layer of security for your account. Before enabling this feature, please read the FAQ in the General Discussion or ask a member of staff!"),
+        UNREGISTER_SUCCESS("&a&lYour account has been unregistered."),
+        UNREGISTER_FAILED("&c&lFailed to unregister the account."),
+        USERNAME_BLACKLISTED("&c&lPlease choose another username"),
+        WELCOME_BACK("&e&lPlease login using /login <password>");
 
 	private final String message;
 
@@ -65,8 +66,11 @@ public enum Messages
 	{
 		message = ChatColor.stripColor(message);
 		for(final Messages msg : Messages.values())
-			if(msg.getNonColoured().contains(message))
+                {
+                        String nocolour = msg.getNonColoured();
+			if(nocolour.contains(message) || (nocolour.contains("%password%") && message.contains(nocolour.substring(nocolour.lastIndexOf("\n")+1, nocolour.indexOf("%password%")))))
 				return true;
+                }
 		return message.startsWith("An error occurred");
 	}
 }

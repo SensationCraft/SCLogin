@@ -49,13 +49,6 @@ public class SCLoginCommand extends SCLoginMasterCommand
 			return true;
 		}
 
-		if(args[0].equalsIgnoreCase("debug"))
-		{
-			for(final Map.Entry<String, PlayerManager.Status> statusEntry : this.plugin.getPlayerManager().playerStatus.entrySet())
-				System.out.println(statusEntry.getKey()+":"+statusEntry.getValue());
-			return true;
-		}
-
 		final Subcommand sub = Subcommand.getSubcommand(args[0]);
 
 		if (args.length < 2 || ((sub == Subcommand.CHANGEPW && args.length < 3) || (sub == Subcommand.SAFEGUARD && args.length < 3)))
@@ -134,20 +127,20 @@ public class SCLoginCommand extends SCLoginMasterCommand
 					sender.sendMessage(profile);
 					break;
 				case SAFEGUARD:
-					args[0] = args[0].toLowerCase();
+					args[1] = args[1].toLowerCase();
 
-					if(!args[1].equals("true") && !args[1].equals("false"))
+					if(!args[2].equals("true") && !args[2].equals("false"))
 					{
 						sender.sendMessage(Messages.INVALID_SYNTAX+"/sclogin safeguard <player> true|false");
 						break;
 					}
 
-					final boolean activate = args[1].equals("true");
+					final boolean activate = args[2].equals("true");
 
-					if(SCLoginCommand.this.plugin.getPlayerManager().setLockedToIp(args[0], activate))
-						sender.sendMessage(ChatColor.GREEN+String.format("Safegaurd %s for player %s", (activate ? "activated" : "disabled"), args[0]));
+					if(SCLoginCommand.this.plugin.getPlayerManager().setLockedToIp(args[1], activate))
+						sender.sendMessage(ChatColor.GREEN+String.format("Safegaurd %s for player %s", (activate ? "activated" : "disabled"), args[1]));
 					else
-						sender.sendMessage(ChatColor.RED+String.format("Safegaurd already %s for player %s", (activate ? "activated" : "disabled"), args[0]));
+						sender.sendMessage(ChatColor.RED+String.format("Safegaurd already %s for player %s", (activate ? "activated" : "disabled"), args[1]));
 					break;
 				default:
 					sender.sendMessage(ChatColor.RED + "Invalid command. Use /sclogin for a full list of commands.");

@@ -62,7 +62,7 @@ public class AuthenticationListener implements Listener
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Your name has to have at least three characters");
 			return;
 		}
-		if (!name.matches("[a-zA-Z0-9_]*"))
+		if (!name.matches("[a-zA-Z0-9_\\-]*"))
 		{
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Your username contains illegal characters.");
 			return;

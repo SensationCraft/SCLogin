@@ -132,8 +132,8 @@ public class xAuthHook
         {
             id = (Integer) results.get("id");
             realPass = (String) results.get("password");
-            type = PasswordType.getType((Integer)results.get("pwtype"));
-            locked = (Integer)results.get("active") == 0;
+            type = PasswordType.getType((Byte)results.get("pwtype"));
+            locked = (Byte)results.get("active") == 0;
         }
         else
         {
@@ -176,6 +176,6 @@ public class xAuthHook
 
     public boolean isRegistered(final String name)
     {
-        return Database.synchronizedExecuteQuery(Collections.EMPTY_MAP, this.getdata, this.getdataLock, name);
+        return Database.synchronizedExecuteQuery(Collections.EMPTY_MAP, this.getdata, this.getdataLock, name.toLowerCase());
     }
 }

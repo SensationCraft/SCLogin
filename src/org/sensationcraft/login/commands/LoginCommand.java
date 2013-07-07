@@ -43,7 +43,7 @@ public class LoginCommand extends SCLoginMasterCommand
 
         final String ip = player.getAddress().getAddress().getHostAddress();
 
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
 
         sender.sendMessage(Messages.LOGGING_IN.getMessage());
         

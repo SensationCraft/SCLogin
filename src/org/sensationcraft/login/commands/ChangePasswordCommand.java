@@ -34,17 +34,17 @@ public class ChangePasswordCommand extends SCLoginMasterCommand
 
 		if (args.length != 2)
 		{
-			sender.sendMessage(Messages.INVALID_SYNTAX.toString() + this.usage);
+			sender.sendMessage(Messages.INVALID_SYNTAX.getMessage() + this.usage);
 			return true;
 		}
 
-		if (args[0].length() < 6)
+		if (args[1].length() < 6)
 		{
 			sender.sendMessage(Messages.PASSWORD_TOO_SHORT.getMessage());
 			return true;
 		}
 
-		if (this.forbidden.contains(args[0].toLowerCase()))
+		if (this.forbidden.contains(args[1].toLowerCase()))
 		{
 			sender.sendMessage(Messages.PASSWORD_BLACKLISTED.getMessage());
 			return true;
@@ -63,9 +63,19 @@ public class ChangePasswordCommand extends SCLoginMasterCommand
 
 				if (pwmanager.checkPassword(name, args[0], player.getAddress().getAddress().getHostAddress()))
 				{
-					pwmanager.changePassword(name, args[1]);
-					player.sendMessage(Messages.PASSWORD_CHANGED.toString());
+					if(pwmanager.changePassword(name, args[1]))
+                                        {
+                                            player.sendMessage(Messages.PASSWORD_CHANGED.getMessage());
+                                        }
+                                        else
+                                        {
+                                            player.sendMessage(Messages.PASSWORD_NOT_CHANGED.getMessage());
+                                        }
 				}
+                                else
+                                {
+                                        player.sendMessage(Messages.INCORRECT_PASSWORD.getMessage());
+                                }
 			}
 		}.runTaskAsynchronously(this.plugin);
 		return true;

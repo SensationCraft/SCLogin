@@ -126,9 +126,9 @@ public class StrikeManager
     {
         if (highPriority)
         {
-            this.highPriority.remove(name);
+            this.highPriority.remove(name.toLowerCase());
         }
-        this.lowPriority.remove(name);
+        this.lowPriority.remove(name.toLowerCase());
     }
 
     public boolean isIpLockedout(final String ip)

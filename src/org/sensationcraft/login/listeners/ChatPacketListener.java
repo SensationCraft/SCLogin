@@ -1,26 +1,25 @@
 package org.sensationcraft.login.listeners;
 
-import org.bukkit.entity.Player;
-import org.sensationcraft.login.SCLogin;
-import org.sensationcraft.login.messages.Messages;
-
 import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.events.ConnectionSide;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import org.bukkit.entity.Player;
+import org.sensationcraft.login.SCLogin;
+import org.sensationcraft.login.messages.Messages;
 
 /**
  *
- * @author s129977
+ * @author DarkSeraphim
  */
 public class ChatPacketListener extends PacketAdapter
 {
 
 	public ChatPacketListener(final SCLogin plugin)
 	{
-		super(plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.HIGHEST, Packets.Server.CHAT);
+		super(plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.LOWEST, Packets.Server.CHAT);
 
 	}
 

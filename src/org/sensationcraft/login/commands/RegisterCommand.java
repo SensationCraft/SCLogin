@@ -11,6 +11,8 @@ import org.sensationcraft.login.SCLogin;
 import org.sensationcraft.login.messages.Messages;
 
 import com.google.common.collect.Sets;
+import org.bukkit.Bukkit;
+import org.sensationcraft.login.event.SCLoginRegisterEvent;
 
 public class RegisterCommand extends SCLoginMasterCommand
 {
@@ -70,7 +72,7 @@ public class RegisterCommand extends SCLoginMasterCommand
 			{
 				try
 				{
-					if (RegisterCommand.this.manager.register(sender.getName().toLowerCase(), args[0], ip))
+					if (RegisterCommand.this.manager.register(sender.getName(), args[0], ip))
                                         {
 						sender.sendMessage(Messages.REGISTER_SUCCESS.getMessage().replace("%password%", args[0]));
                                                 RegisterCommand.this.manager.join(sender.getName().toLowerCase(), true);

@@ -47,6 +47,7 @@ public class AuthenticationListener implements Listener
 	{
 		if (Bukkit.getOnlineMode())
 			return;
+                System.out.println("PlayerLoginEvent for "+event.getPlayer().getName());
 		final Player player = event.getPlayer();
 		final String name = player.getName();
 		final InetAddress address = event.getAddress();
@@ -83,7 +84,7 @@ public class AuthenticationListener implements Listener
 						ready = AuthenticationListener.this.joined.remove(name);
 					}
 					if (ready)
-						new BukkitRunnable()
+                                        new BukkitRunnable()
 					{
 						@Override
 						public void run()
@@ -104,6 +105,7 @@ public class AuthenticationListener implements Listener
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerLogin(final AsyncPlayerPreLoginEvent e)
 	{
+                System.out.println("AsyncPlayerPreLoginEvent for "+e.getName());
 		final String name = e.getName().toLowerCase();
 		if (this.plugin.getPlayerManager().isOnline(name))
 		{
@@ -142,8 +144,14 @@ public class AuthenticationListener implements Listener
 			public void run()
 			{
 				if (AuthenticationListener.this.plugin.getPlayerManager().isRegistered(player.getName().toLowerCase()))
-					player.sendMessage(Messages.WELCOME_BACK.getMessage());
-				else player.sendMessage(Messages.NEW_PLAYER.getMessage());
+                                {
+                                    player.sendMessage(Messages.WELCOME_BACK.getMessage());
+                                }
+                                else
+                                {
+                                    player.sendMessage(Messages.NEW_PLAYER.getMessage());
+                                }
+                                
 			}
 		}.runTaskLaterAsynchronously(this.plugin, 1L);
 		for (final Player other : Bukkit.getOnlinePlayers())

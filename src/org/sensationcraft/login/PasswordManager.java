@@ -29,7 +29,7 @@ public class PasswordManager
         {
             return false;
         }
-        final PlayerCheck reference = new PlayerCheck(player);
+        final PlayerCheck reference = new PlayerCheck(player.toLowerCase());
         final xAuthHook hook = this.plugin.getxAuthHook();
         if (hook.isHooked())
         {
@@ -59,7 +59,7 @@ public class PasswordManager
         {
                 Map<String, Object> results = new HashMap<String, Object>();
                 results.put("password", null);
-                if(!Database.synchronizedExecuteQuery(results, this.getpass, this.getpassLock, player))
+                if(!Database.synchronizedExecuteQuery(results, this.getpass, this.getpassLock, player.toLowerCase()))
                 {
                     return false;
                 }
@@ -75,7 +75,7 @@ public class PasswordManager
         {
             return false;
         }
-        Database.synchronizedExecuteUpdate(this.cpw, this.cpwLock, name, password);
+        Database.synchronizedExecuteUpdate(this.cpw, this.cpwLock, password, name);
         return true;
     }
 

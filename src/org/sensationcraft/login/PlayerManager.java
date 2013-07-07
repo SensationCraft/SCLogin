@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.sensationcraft.login.event.SCLoginRegisterEvent;
 import org.sensationcraft.login.messages.Messages;
 import org.sensationcraft.login.sql.Database;
 
@@ -73,7 +74,7 @@ public class PlayerManager
     public boolean isRegistered(final String name)
     {
         final xAuthHook hook = this.plugin.getxAuthHook();
-        boolean isRegistered = Database.synchronizedExecuteQuery(Collections.EMPTY_MAP, this.registered, this.registeredLock, name);
+        boolean isRegistered = Database.synchronizedExecuteQuery(Collections.EMPTY_MAP, this.registered, this.registeredLock, name.toLowerCase());
         
         return isRegistered || (hook.isHooked() && hook.isRegistered(name));
     }
@@ -81,10 +82,12 @@ public class PlayerManager
     public boolean hasRegistered(String name)
     {
         name = name.toLowerCase();
+        Status status;
         synchronized (this.statusLock)
         {
-            return this.playerStatus.get(name) == Status.NOT_LOGGED_IN;
+            status = this.playerStatus.get(name);
         }
+        return status == Status.NOT_LOGGED_IN;
     }
 
     public String getLastIp(final String name)
@@ -118,7 +121,7 @@ public class PlayerManager
     {
         synchronized (this.statusLock)
         {
-            this.playerStatus.put(name.toLowerCase(), isRegistered ? Status.NOT_LOGGED_IN : Status.NOT_REGISTERED);
+            this.playerStatus.put(name.toLowerCase(), isRegistered ? ( Status.NOT_LOGGED_IN) : Status.NOT_REGISTERED);
         }
     }
 
@@ -135,15 +138,16 @@ public class PlayerManager
         final Player player = this.plugin.getServer().getPlayerExact(name);
         if (player == null)
         {
-            this.quit(name);
+            this.quit(name.toLowerCase());
             return;
         }
         synchronized (this.statusLock)
         {
-            this.playerStatus.put(name, Status.AUTHENTICATED);
+            this.playerStatus.put(name.toLowerCase(), Status.AUTHENTICATED);
         }
         player.removePotionEffect(PotionEffectType.BLINDNESS);
         player.sendMessage(Messages.LOGIN_SUCCESS.getMessage());
+        
         new BukkitRunnable()
         {
             @Override
@@ -158,7 +162,7 @@ public class PlayerManager
                 }
             }
         }.runTask(this.plugin);
-        Database.synchronizedExecuteUpdate(this.updateIp, this.updateIpLock, player.getAddress().getAddress().getHostAddress(), name);
+        Database.synchronizedExecuteUpdate(this.updateIp, this.updateIpLock, player.getAddress().getAddress().getHostAddress(), name.toLowerCase());
     }
 
     public boolean register(final String name, final String pass, final String ip) throws Exception
@@ -170,7 +174,12 @@ public class PlayerManager
 
         Database.synchronizedExecuteUpdate(this.register, this.registerLock, name, pass, ip, "", 0);
 
-        return this.isRegistered(name);
+        boolean ret = this.isRegistered(name);
+        if(ret)
+        {
+            Bukkit.getPluginManager().callEvent(new SCLoginRegisterEvent(name, false));
+        }
+        return ret;
     }
 
     public boolean unregister(final String name)
@@ -189,7 +198,7 @@ public class PlayerManager
     {
         Map<String, Object> results = new HashMap<String, Object>();
         results.put("locked", null);
-        if(!Database.synchronizedExecuteQuery(results, this.isLocked, this.isLockedLock, name))
+        if(!Database.synchronizedExecuteQuery(results, this.isLocked, this.isLockedLock, name.toLowerCase()))
         {
             return false;
         }
@@ -198,7 +207,7 @@ public class PlayerManager
 
     public boolean setLocked(final String name, final boolean flag)
     {
-        Database.synchronizedExecuteUpdate(this.setLock, this.setLockLock, (flag ? 1 : 0), name);
+        Database.synchronizedExecuteUpdate(this.setLock, this.setLockLock, (flag ? 1 : 0), name.toLowerCase());
         return this.isLocked(name);
     }
 

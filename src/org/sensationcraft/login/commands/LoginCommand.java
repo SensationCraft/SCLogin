@@ -82,9 +82,9 @@ public class LoginCommand extends SCLoginMasterCommand
                             {
                                 if (other.isValid() && LoginCommand.this.plugin.getPlayerManager().isLoggedIn(other.getName()))
                                 {
-                                    if(!other.canSee(player))
+                                    if(!other.canSee(player) && LoginCommand.this.plugin.getPlayerManager().isVisible(player))
                                         other.showPlayer(player);
-                                    if(!player.canSee(other))
+                                    if(!player.canSee(other) && LoginCommand.this.plugin.getPlayerManager().isVisible(other))
                                         player.showPlayer(other);
                                 }
                             }

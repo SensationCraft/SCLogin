@@ -1,5 +1,7 @@
 package org.sensationcraft.login;
 
+import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.User;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sensationcraft.login.event.SCLoginRegisterEvent;
@@ -52,6 +55,8 @@ public class PlayerManager
     private final YamlConfiguration safegaurdCfg;
     private final Set<String> safeguarded = new HashSet<String>();
     private final Object safegaurdLock = new Object();
+    
+    private Essentials ess;
 
     protected PlayerManager(final SCLogin plugin)
     {
@@ -69,6 +74,12 @@ public class PlayerManager
         this.safegaurdFile = new File(plugin.getDataFolder(), "safegaurd.dat");
         this.safegaurdCfg = YamlConfiguration.loadConfiguration(this.safegaurdFile);
         this.safeguarded.addAll(this.safegaurdCfg.getStringList("locked-to-ip"));
+        
+        Plugin p = Bukkit.getPluginManager().getPlugin("Essentials");
+        if(p != null)
+        {
+            this.ess = (Essentials) p;
+        }
     }
 
     public boolean isRegistered(final String name)
@@ -147,21 +158,6 @@ public class PlayerManager
         }
         player.removePotionEffect(PotionEffectType.BLINDNESS);
         player.sendMessage(Messages.LOGIN_SUCCESS.getMessage());
-        
-        new BukkitRunnable()
-        {
-            @Override
-            public void run()
-            {
-                for (final Player other : Bukkit.getOnlinePlayers())
-                {
-                    if (!other.canSee(player) && PlayerManager.this.isLoggedIn(other.getName().toLowerCase()))
-                    {
-                        other.showPlayer(player);
-                    }
-                }
-            }
-        }.runTask(this.plugin);
         Database.synchronizedExecuteUpdate(this.updateIp, this.updateIpLock, player.getAddress().getAddress().getHostAddress(), name.toLowerCase());
     }
 
@@ -309,5 +305,12 @@ public class PlayerManager
             // Swallow the exception
         }
         return r;
+    }
+    
+    public boolean isVisible(Player object)
+    {
+        if(this.ess == null) return false;
+        if(object == null) return false;
+        return !this.ess.getVanishedPlayers().contains(object.getName());
     }
 }

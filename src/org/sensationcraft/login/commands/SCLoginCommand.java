@@ -120,7 +120,7 @@ public class SCLoginCommand extends SCLoginMasterCommand
 				case CHANGEPW:
 
 					SCLoginCommand.this.plugin.getPasswordManager().changePassword(args[1], args[2]);
-					sender.sendMessage(Messages.PASSWORD_CHANGED.getMessage());
+					sender.sendMessage(Messages.PASSWORD_CHANGED_OTHER.getMessage());
 					break;
 				case PROFILE:
 					final String profile = SCLoginCommand.this.plugin.getPlayerManager().getProfile(args[1]);

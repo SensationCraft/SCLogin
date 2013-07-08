@@ -1,10 +1,10 @@
 package org.sensationcraft.login;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -27,6 +27,8 @@ import org.sensationcraft.login.sql.Database;
 import org.sensationcraft.login.sql.SQLite;
 import org.sensationcraft.login.sql.TableBuilder;
 import org.sensationcraft.login.strikes.StrikeManager;
+
+import com.comphenix.protocol.ProtocolLibrary;
 
 public class SCLogin extends JavaPlugin
 {

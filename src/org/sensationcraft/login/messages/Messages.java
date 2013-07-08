@@ -16,11 +16,11 @@ public enum Messages
 	IP_LOCKOUT("Your account has been temporarily locked for entering too many incorrects passwords."),
 	INVALID_SYNTAX("&c&lInvalid syntax! Correct usage: "),
 	LOCKED("&c&lThat account is locked by an administrator."),
-        LOGGING_IN("&a&l&oLogging in..."),
+	LOGGING_IN("&a&l&oLogging in..."),
 	LOGIN_SUCCESS("&a&lYou have been logged in."),
 	LOGOUT("&a&lYou are no longer logged in."),
 	NOT_LOGGEDIN("&e&lPlease login using /login <password>"),
-        NOT_REGISTERED_YET("&e&lPlease register using /register <password>"),
+	NOT_REGISTERED_YET("&e&lPlease register using /register <password>"),
 	NOT_REGISTERED("&c&lThat account is not registered. Use /register <password> to register."),
 	NEW_PLAYER("&e&l************************************************\n"+
 			"&e&l         WELCOME TO SENSATION CRAFT\n"+
@@ -67,23 +67,19 @@ public enum Messages
 	public static boolean isSCLoginMessage(String message)
 	{
 		message = ChatColor.stripColor(message);
-                if(message.contains("\\u003c")) message = message.replace("\\u003c", "<");
-                if(message.contains("\\u003e")) message = message.replace("\\u003e", ">");
+		if(message.contains("\\u003c")) message = message.replace("\\u003c", "<");
+		if(message.contains("\\u003e")) message = message.replace("\\u003e", ">");
 		for(final Messages msg : Messages.values())
-                {
-                        String nocolour = msg.getNonColoured();
-                        if(message.contains(nocolour)) 
-                        {
-                            return true;
-                        }
+		{
+			final String nocolour = msg.getNonColoured();
+			if(message.contains(nocolour))
+				return true;
 			if(nocolour.contains(message) || (nocolour.contains("%password%") && message.contains(nocolour.substring(nocolour.lastIndexOf("\n")+1, nocolour.indexOf("%password%")))))
-                        {
-                            return true;
-                        }
-                }
+				return true;
+		}
 		return message.contains("An error occurred") ||
-                       message.contains("You are no longer immune to PvP combat.") ||
-                       message.contains("You are protected from PvP combat for the next 2 hours. This effect will cancel if voluntarily engage in combat.") ||
-                       message.contains("This player is temporarily immune to PvP damage.");
+				message.contains("You are no longer immune to PvP combat.") ||
+				message.contains("You are protected from PvP combat for the next 2 hours. This effect will cancel if voluntarily engage in combat.") ||
+				message.contains("This player is temporarily immune to PvP damage.");
 	}
 }

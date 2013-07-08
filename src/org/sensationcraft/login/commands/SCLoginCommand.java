@@ -1,12 +1,10 @@
 package org.sensationcraft.login.commands;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.sensationcraft.login.PlayerManager;
 import org.sensationcraft.login.SCLogin;
 import org.sensationcraft.login.messages.Messages;
 

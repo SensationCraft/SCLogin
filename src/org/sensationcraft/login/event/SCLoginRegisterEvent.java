@@ -9,28 +9,28 @@ import org.bukkit.event.HandlerList;
 public class SCLoginRegisterEvent extends SCLoginEvent
 {
 
-    private final boolean isNew;
-    
-    private static final HandlerList handlers = new HandlerList();
+	private final boolean isNew;
 
-    public SCLoginRegisterEvent(String name, boolean isNew)
-    {
-        super(name);
-        this.isNew = isNew;
-    }
+	private static final HandlerList handlers = new HandlerList();
 
-    public boolean isNewPlayer()
-    {
-        return this.isNew;
-    }
+	public SCLoginRegisterEvent(final String name, final boolean isNew)
+	{
+		super(name);
+		this.isNew = isNew;
+	}
 
-    public HandlerList getHandlers()
-    {
-        return handlers;
-    }
+	public boolean isNewPlayer()
+	{
+		return this.isNew;
+	}
 
-    public static HandlerList getHandlerList()
-    {
-        return handlers;
-    }
+	public HandlerList getHandlers()
+	{
+		return SCLoginRegisterEvent.handlers;
+	}
+
+	public static HandlerList getHandlerList()
+	{
+		return SCLoginRegisterEvent.handlers;
+	}
 }

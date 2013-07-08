@@ -8,17 +8,17 @@ import org.bukkit.event.Event;
  */
 public abstract class SCLoginEvent extends Event
 {
-    
-    private final String name;
-    
-    public SCLoginEvent(String name)
-    {
-        this.name = name;
-    }
-    
-    public String getName()
-    {
-        return this.name;
-    }
+
+	private final String name;
+
+	public SCLoginEvent(final String name)
+	{
+		this.name = name;
+	}
+
+	public String getName()
+	{
+		return this.name;
+	}
 
 }

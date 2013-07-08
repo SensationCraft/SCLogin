@@ -64,18 +64,11 @@ public class ChangePasswordCommand extends SCLoginMasterCommand
 				if (pwmanager.checkPassword(name, args[0], player.getAddress().getAddress().getHostAddress()))
 				{
 					if(pwmanager.changePassword(name, args[1]))
-                                        {
-                                            player.sendMessage(Messages.PASSWORD_CHANGED.getMessage());
-                                        }
-                                        else
-                                        {
-                                            player.sendMessage(Messages.PASSWORD_NOT_CHANGED.getMessage());
-                                        }
-				}
-                                else
-                                {
-                                        player.sendMessage(Messages.INCORRECT_PASSWORD.getMessage());
-                                }
+						player.sendMessage(Messages.PASSWORD_CHANGED.getMessage());
+					else
+						player.sendMessage(Messages.PASSWORD_NOT_CHANGED.getMessage());
+				} else
+					player.sendMessage(Messages.INCORRECT_PASSWORD.getMessage());
 			}
 		}.runTaskAsynchronously(this.plugin);
 		return true;

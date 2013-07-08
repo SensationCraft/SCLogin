@@ -9,7 +9,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.sensationcraft.login.SCLogin;
 import org.sensationcraft.login.messages.Messages;
@@ -54,11 +53,11 @@ public class PlayerListener implements Listener
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onMove(final org.bukkit.event.player.PlayerMoveEvent event)
 	{
-                final String name = event.getPlayer().getName();
+		final String name = event.getPlayer().getName();
 		if(!this.plugin.getPlayerManager().isLoggedIn(name))
 		{
 			event.setTo(event.getFrom());
-			if(this.count(name))
+			if(this.count(name) && !this.plugin.getPlayerManager().isLoggingIn(event.getPlayer().getName()))
 				event.getPlayer().sendMessage(this.plugin.getPlayerManager().hasRegistered(name) ? Messages.NOT_LOGGEDIN.getMessage() : Messages.NOT_REGISTERED_YET.getMessage());
 			//event.setCancelled(true);
 			//plugin.getStrikeManager().addStrikePoints(event.getPlayer(), 1, false);

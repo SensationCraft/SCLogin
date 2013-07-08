@@ -1,14 +1,15 @@
 package org.sensationcraft.login.listeners;
 
+import org.bukkit.entity.Player;
+import org.sensationcraft.login.SCLogin;
+import org.sensationcraft.login.messages.Messages;
+
 import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.events.ConnectionSide;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import org.bukkit.entity.Player;
-import org.sensationcraft.login.SCLogin;
-import org.sensationcraft.login.messages.Messages;
 
 /**
  *
@@ -33,9 +34,7 @@ public class ChatPacketListener extends PacketAdapter
 			final Player player = event.getPlayer();
 			if(Messages.isSCLoginMessage(message)) return;
 			if(!((SCLogin)this.getPlugin()).getPlayerManager().isLoggedIn(player.getName()))
-			{
 				event.setCancelled(true);
-			}
 		}
 	}
 }

@@ -10,6 +10,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.sensationcraft.login.SCLogin;
 import org.sensationcraft.login.messages.Messages;
 
@@ -19,6 +22,8 @@ public class PlayerListener implements Listener
 	private final SCLogin plugin;
 
 	private final Map<String, Integer> count = new HashMap<String, Integer>();
+        
+        private final PotionEffect blindness = new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 2);
 
 	public PlayerListener(final SCLogin plugin)
 	{
@@ -218,4 +223,14 @@ public class PlayerListener implements Listener
 		final String name = event.getPlayer().getName().toLowerCase();
 		this.count.remove(name);
 	}
+        
+        @EventHandler
+        public void onRespawn(final PlayerRespawnEvent event)
+        {
+            Player player = event.getPlayer();
+            if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
+            {
+                player.addPotionEffect(this.blindness);
+            }
+        }
 }

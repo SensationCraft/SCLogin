@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sensationcraft.login.PlayerManager;
 import org.sensationcraft.login.SCLogin;
+import org.sensationcraft.login.event.SCLoginLoginEvent;
 import org.sensationcraft.login.messages.Messages;
 
 public class LoginCommand extends SCLoginMasterCommand
@@ -78,6 +79,7 @@ public class LoginCommand extends SCLoginMasterCommand
 						@Override
 						public void run()
 						{
+                                                        Bukkit.getPluginManager().callEvent(new SCLoginLoginEvent(name, player));
 							for (final Player other : Bukkit.getOnlinePlayers())
 								if (other.isValid() && LoginCommand.this.plugin.getPlayerManager().isLoggedIn(other.getName()))
 								{

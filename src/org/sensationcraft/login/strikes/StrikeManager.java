@@ -100,7 +100,7 @@ public class StrikeManager
                  }
                  }.runTask(plugin);*/
 			}
-		} else
+		} else if(this.plugin.getPlayerManager().isLoggingIn(name))
 			player.sendMessage(this.plugin.getPlayerManager().hasRegistered(name) ? Messages.NOT_LOGGEDIN.getMessage() : Messages.NOT_REGISTERED_YET.getMessage());
 	}
 

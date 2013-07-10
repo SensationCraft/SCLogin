@@ -66,7 +66,7 @@ public class PasswordManager
 
 	public boolean changePassword(final String name, final String password)
 	{
-		if (this.plugin.getPlayerManager().isRegistered(name))
+		if (!this.plugin.getPlayerManager().isRegistered(name))
 			return false;
 		Database.synchronizedExecuteUpdate(this.cpw, this.cpwLock, password, name);
 		return true;

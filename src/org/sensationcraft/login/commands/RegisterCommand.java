@@ -63,6 +63,8 @@ public class RegisterCommand extends SCLoginMasterCommand
 
 		final String ip = ((Player) sender).getAddress().getAddress().getHostAddress();
 
+                sender.sendMessage(Messages.REGISTERING.getMessage());
+                
 		new BukkitRunnable()
 		{
 			@Override

@@ -33,6 +33,7 @@ public enum Messages
         PASSWORD_NOT_CHANGED("&c&lFailed to change your password."),
         PASSWORD_TOO_SHORT("&c&lYour password is too short. At least 6 characters are required."),
         REGISTER_SUCCESS("&a&lYour account has been registered.\n&e&lUse /login <password> to proceed.\n&e&lYour password is: &n&l&e%password%&e&l. DO NOT FORGET"),
+        REGISTERING("&a&l&oRegistering, please wait..."),
         RELOAD_LOGOUT("&a&lServer reloaded, you have been automaticly logged out."),
         SAFEGUARD_ALREADY_DISABLED("&c&lSafegaurd already disabled."),
         SAFEGUARD_ALREADY_ENABLED("&c&lSafegaurd already enabled."),

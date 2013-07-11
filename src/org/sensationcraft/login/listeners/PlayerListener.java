@@ -86,7 +86,7 @@ public class PlayerListener implements Listener
 		final Player player = (Player) event.getDamager();
 		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
 		{
-			event.setDamage(0);
+			event.setDamage(0.0);
 			event.setCancelled(true);
 			this.plugin.getStrikeManager().addStrikePoints(player, 10, false);
 		}
@@ -99,7 +99,7 @@ public class PlayerListener implements Listener
 		final Player player = (Player) event.getEntity();
 		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
 		{
-			event.setDamage(0);
+			event.setDamage(0.0);
 			event.setCancelled(true);
 			this.plugin.getStrikeManager().addStrikePoints(player, 10, false);
 		}
@@ -203,7 +203,7 @@ public class PlayerListener implements Listener
 		final Player player = (Player) event.getEntity();
 		if(!this.plugin.getPlayerManager().isLoggedIn(player.getName()))
 		{
-			event.setAmount(0);
+			event.setAmount(0.0);
 			event.setCancelled(true);
 		}
 	}

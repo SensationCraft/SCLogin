@@ -117,7 +117,10 @@ public class StrikeManager
 		results.put("till", null);
 		if(Database.synchronizedExecuteQuery(results, this.checkip, this.checkipLock, ip))
 		{
-			final Timestamp till = (Timestamp) results.get("till");
+			Timestamp till = null;
+			Object object = results.get("till");
+			if(object instanceof Long) till = new Timestamp((long) object);
+			else till = (Timestamp) results.get("till");
 			final long now = System.currentTimeMillis();
 			final boolean done = till.before(new Timestamp(now));
 			if (done)

@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/superckl/Dropbox/Code/reflib/craftbukkit-1.5.2-R1.1-20130617.161801-2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/superckl/Dropbox/Code/reflib/ProtocolLib-2.4.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/superckl/Dropbox/Code/reflib/craftbukkit-1.6.2-R0.1-20130709.000904-1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/superckl/Dropbox/Code/reflib/ProtocolLib-2.4.7.jar"/>
 	<classpathentry kind="lib" path="C:/Users/superckl/Dropbox/Code/reflib/Essentials.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

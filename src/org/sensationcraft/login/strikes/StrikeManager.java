@@ -119,19 +119,19 @@ public class StrikeManager
 		{
 			Timestamp till = null;
 			Object object = results.get("till");
-			if(object instanceof Long) till = new Timestamp((long) object);
+			if(object instanceof Long) till = new Timestamp((Long) object);
 			else till = (Timestamp) results.get("till");
 			final long now = System.currentTimeMillis();
 			final boolean done = till.before(new Timestamp(now));
 			if (done)
-				new BukkitRunnable()
-			{
+                            new BukkitRunnable()
+                            {
 				@Override
 				public void run()
 				{
 					Database.synchronizedExecuteUpdate(StrikeManager.this.dellock, StrikeManager.this.dellockLock, ip);
 				}
-			}.runTaskAsynchronously(this.plugin);
+                            }.runTaskAsynchronously(this.plugin);
 			return !done;
 		}
 		return false;

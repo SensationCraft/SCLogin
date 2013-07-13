@@ -84,7 +84,7 @@ public class PlayerManager
 	public boolean isRegistered(final String name)
 	{
 		final xAuthHook hook = this.plugin.getxAuthHook();
-		final boolean isRegistered = Database.synchronizedExecuteQuery(Collections.<String, Object> emptyMap(), this.registered, this.registeredLock, name.toLowerCase());
+		final boolean isRegistered = Database.synchronizedExecuteQuery(Collections.<String, Object>emptyMap(), this.registered, this.registeredLock, name.toLowerCase());
 
 		return isRegistered || (hook.isHooked() && hook.isRegistered(name));
 	}

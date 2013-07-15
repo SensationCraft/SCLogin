@@ -39,6 +39,8 @@ public class PasswordManager
 			// using this authentication
 			try
 			{
+                                if(this.plugin.getPlayerManager().isRegistered(player))
+                                    this.plugin.getPlayerManager().unregister(player);
 				this.plugin.getPlayerManager().register(player, checkPass, ip);
 				this.plugin.getPlayerManager().setLocked(player, reference.isLocked());
 				return !reference.isLocked();

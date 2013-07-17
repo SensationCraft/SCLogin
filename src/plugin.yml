@@ -1,6 +1,6 @@
 name: SCLogin
 authors: [superckl, Fireblast709]
-version: 1.0
+version: 1.1
 main: org.sensationcraft.login.SCLogin
 website: www.sensationcraft.info
 depend: [ProtocolLib]

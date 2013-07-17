@@ -41,6 +41,7 @@ public enum Messages
         SAFEGUARD_ENABLED("&a&lSafegaurd enabled. Don't forget to read the FAQ on the forum!"),
         SAFEGUARD_INFO("&6&lThis is meant to be another layer of security for your account. Before enabling this feature, please read the FAQ in the General Discussion or ask a member of staff!"),
         UNREGISTER_SUCCESS("&a&lYour account has been unregistered."),
+        UNREGISTER_SUCCESS_OTHER("&a&lYour account has been unregistered."),
         UNREGISTER_FAILED("&c&lFailed to unregister the account."),
         USERNAME_BLACKLISTED("&c&lPlease choose another username"),
         WELCOME_BACK("&e&lPlease login using /login <password>");

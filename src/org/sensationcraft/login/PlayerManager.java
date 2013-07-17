@@ -159,6 +159,11 @@ public class PlayerManager
 			return false;
 
 		Database.synchronizedExecuteUpdate(this.unregister, this.unregisterLock, name);
+                xAuthHook hook = this.plugin.getxAuthHook();
+                if(hook.isHooked() && hook.isRegistered(name))
+                {
+                    hook.unregister(name);
+                }
 
 		return !this.isRegistered(name);
 	}

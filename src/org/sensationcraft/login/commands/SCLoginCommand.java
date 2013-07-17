@@ -21,13 +21,13 @@ public class SCLoginCommand extends SCLoginMasterCommand
 	{
 		super("sclogin");
 		this.plugin = plugin;
-		final StringBuilder desc = new StringBuilder("----- SCLogin -----");
+		final StringBuilder desc = new StringBuilder(String.format("----- SCLogin v %s-----", this.plugin.getDescription().getVersion()));
 		for (final Subcommand sc : Subcommand.values())
 		{
 			desc.append("/sclogin ").append(sc.getCommand());
 			desc.append(" - ").append(sc.getDescription()).append("\n");
 		}
-		desc.append("-------------------");
+		desc.append("-----------------------");
 		this.description = desc.toString();
 	}
 
@@ -85,7 +85,14 @@ public class SCLoginCommand extends SCLoginMasterCommand
 				switch (sub)
 				{
 				case UNREGISTER:
-					SCLoginCommand.this.plugin.getPlayerManager().unregister(args[1]);
+					if(SCLoginCommand.this.plugin.getPlayerManager().unregister(args[1]))
+                                        {
+                                            sender.sendMessage(Messages.UNREGISTER_SUCCESS_OTHER.getMessage());
+                                        }
+                                        else
+                                        {
+                                            sender.sendMessage(Messages.UNREGISTER_FAILED.getMessage());
+                                        }
 					break;
 				case LOCK:
 					if (SCLoginCommand.this.plugin.getPlayerManager().isLocked(args[1]))

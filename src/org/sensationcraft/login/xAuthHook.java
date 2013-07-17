@@ -69,7 +69,7 @@ public class xAuthHook
 		if (this.olddb.isReady())
 		{
 			this.getdata = this.olddb.prepare("SELECT `id`,`password`, `pwtype`, `active` FROM `accounts` WHERE LOWER(`playername`) = LOWER(?)");
-			this.delid = this.olddb.prepare("DELETE FROM `accounts` WHERE id = ?");
+			this.delid = this.olddb.prepare("DELETE FROM `accounts` WHERE LOWER(`playername`) = LOWER(?)");
 			plugin.getLogger().log(Level.INFO, "Hooked into the old xAuth database.");
 		}
 	}
@@ -146,8 +146,7 @@ public class xAuthHook
 			reference.authenticate();
 			if (locked)
 				reference.lock();
-			// update hash in database to use xAuth's hashing method
-			Database.synchronizedExecuteUpdate(this.delid, this.delidLock, id);
+                        unregister(player);
 		}
 	}
 
@@ -155,4 +154,10 @@ public class xAuthHook
 	{
 		return Database.synchronizedExecuteQuery(Collections.<String, Object> emptyMap(), this.getdata, this.getdataLock, name.toLowerCase());
 	}
+        
+        public void unregister(String name)
+        {
+            // Unregister the account in the xAuth database to move it towards the SCLogin database
+            Database.synchronizedExecuteUpdate(this.delid, this.delidLock, name);
+        }
 }

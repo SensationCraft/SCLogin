@@ -171,7 +171,7 @@ public class SCLogin extends JavaPlugin
 		this.commands.put("changepw", cpw);
 		this.commands.put("cpw", cpw);
 		this.commands.put("register", new RegisterCommand(this));
-		this.commands.put("unregister", new UnregisterCommand(this));
+		//this.commands.put("unregister", new UnregisterCommand(this));
 		this.commands.put("sclogin", new SCLoginCommand(this));
 		//this.commands.put("logout", new LogoutCommand(this));
 		this.commands.put("safeguard", new SafeguardCommand(this));

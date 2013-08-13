@@ -1,6 +1,6 @@
 name: SCLogin
 authors: [superckl, Fireblast709]
-version: 1.0
+version: 1.1
 main: org.sensationcraft.login.SCLogin
 website: www.sensationcraft.info
 depend: [ProtocolLib]
@@ -26,9 +26,36 @@ commands:
   sclogin:
     description: administration command for trusted staff
     usage: /<command> [subcommand]
-  unregister:
-    description: unregisters the account you are logged in with
-    usage: /<command>
+  #unregister:
+  #  description: unregisters the account you are logged in with
+  #  usage: /<command>
   safeguard:
     description: Adds another layer of security to your account
     usage: /<command> enable|disable
+  
+  permissions:
+    sclogin.admin:
+      default: false
+      children:
+        sclogin.admin.unregister: true
+        sclogin.admin.lock: true
+        sclogin.admin.changepw: true
+        sclogin.admin.safeguard: true
+        sclogin.mod: true
+    sclogin.mod:
+      default: op
+      chidlren:
+        sclogin.mod.profile: true
+        sclogin.mod.count: true
+		sclogin.admin.unregister:
+      default: false
+		sclogin.admin.lock:
+      default: false
+		sclogin.mod.count:
+      default: op
+		sclogin.admin.changepw:
+      default: false
+		sclogin.mod.profile:
+      default: op
+		sclogin.admin.safeguard:
+      default: false
